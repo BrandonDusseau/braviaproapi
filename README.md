@@ -27,3 +27,7 @@ the functionality you need.
 ## Using the library
 
 TO DO
+
+## License
+
+This project is released under the MIT License. Refer to the LICENSE file for details.
