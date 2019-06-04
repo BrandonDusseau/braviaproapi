@@ -7,7 +7,7 @@ Library for communicating with Sony Bravia TVs utilizing its Bravia Professional
 
 ## Requirements
 
-This library requires Python 3.7 (tentative) or higher. You can install it with `pip install [fill this in later]`.
+This library requires Python 3.7 (tentative) or higher. You can install it with `pip install braviaproapi`.
 
 ## Enabling the API on the TV
 

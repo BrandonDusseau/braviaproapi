@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="py-bravia-pro-api",
+    name="braviaproapi",
     version="0.0.1",
     author="Brandon Dusseau",
     author_email="brandon.dusseau@gmail.com",
@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/BrandonDusseau/py-bravia-pro-api",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=["http"]),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -21,6 +21,6 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
-    install_requires=[],
+    install_requires=["requests"],
     keywords='sony bravia television remote control library'
 )
