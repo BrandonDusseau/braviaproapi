@@ -15,8 +15,7 @@ class http(object):
         self.host = host
         self.psk = psk
 
-    def request(self, endpoint, method, params, version="1.0"):
-        print("foo!")
+    def request(self, endpoint, method, params=None, version="1.0"):
         self.request_id += 1
 
         url = "http://{0}/sony/{1}".format(self.host, endpoint)
@@ -28,8 +27,9 @@ class http(object):
         }
 
         request_params = []
-        for param_name in params:
-            request_params.append({param_name: params[param_name]})
+        if params is not None:
+            for param_name in params:
+                request_params.append({param_name: params[param_name]})
 
         payload = {
             "method": method,
@@ -61,4 +61,7 @@ class http(object):
         if "result" not in response:
             return None
 
-        return response["result"]
+        response_object = {}
+        for entry in response["result"]:
+            response_object.update(entry)
+        return response_object
