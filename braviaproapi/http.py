@@ -1,14 +1,14 @@
-import requests
 import json
+import requests
 
 
-class http_exception(Exception):
+class HttpError(Exception):
     def __init__(self, message, error_code=None):
         self.error_code = error_code
         pass
 
 
-class http(object):
+class Http(object):
     request_id = 0
 
     def __init__(self, host, psk):
@@ -41,27 +41,30 @@ class http(object):
         try:
             result = requests.post(url, headers=headers, data=json.dumps(payload), timeout=5)
         except requests.exceptions.Timeout:
-            raise http_exception("The request timed out. Is the device powered with the IP control interface enabled?")
+            raise HttpError("The request timed out. Is the device powered with the IP control interface enabled?")
         except requests.exceptions.ConnectionError as err:
-            raise http_exception("A connection error occurred: {0}".format(str(err)))
+            raise HttpError("A connection error occurred: {0}".format(str(err)))
         except requests.exceptions.RequestsException as err:
-            raise http_exception("An unexpected error occurred while sending the request: {0}".format(str(err)))
+            raise HttpError("An unexpected error occurred while sending the request: {0}".format(str(err)))
 
         if result.status_code != 200:
-            raise http_exception("Unexpected status code {0} received".format(str(result.status_code)))
+            raise HttpError("Unexpected status code {0} received".format(str(result.status_code)))
 
         try:
             response = result.json()
         except ValueError:
-            raise http_exception("Unable to deserialize API response. The response was: {0}".format(response.text()))
+            raise HttpError("Unable to deserialize API response. The response was: {0}".format(response.text()))
 
         if "error" in response:
-            raise http_exception(response["error"][1], error_code=response["error"][0])
+            raise HttpError(response["error"][1], error_code=response["error"][0])
 
         if "result" not in response:
-            return None
+            raise HttpError("The API response was malformed")
 
-        response_object = {}
-        for entry in response["result"]:
-            response_object.update(entry)
-        return response_object
+        # The API's response is encapsulated in an array, so extract and return it
+        if not isinstance(response["result"], list):
+            raise ValueError("The API response was in an unexpected format and cannot be processed.")
+        if len(response["result"]) == 0:
+            return None
+        else:
+            return response["result"][0]
