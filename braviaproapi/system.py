@@ -22,6 +22,14 @@ class LedMode(Enum):
     OFF = 5
 
 
+class PowerSavingMode(Enum):
+    UNKNOWN = 0,
+    OFF = 1,
+    LOW = 2,
+    HIGH = 3,
+    PICTURE_OFF = 4
+
+
 class System(object):
     def __init__(self, bravia_client, http_client):
         self.bravia_client = bravia_client
@@ -162,3 +170,26 @@ class System(object):
             return network_interfaces[0]
         else:
             return network_interfaces
+
+    def get_power_saving_mode(self):
+        self.bravia_client.initialize()
+
+        response = self.http_client.request(endpoint="system", method="getPowerSavingMode", version="1.0")
+
+        saving_mode = None
+        if "mode" in response:
+            valid_modes = {
+                "off": PowerSavingMode.OFF,
+                "low": PowerSavingMode.LOW,
+                "high": PowerSavingMode.HIGH,
+                "pictureOff": PowerSavingMode.PICTURE_OFF,
+                "Off": LedMode.OFF
+            }
+            saving_mode = valid_modes.get(response["mode"], PowerSavingMode.UNKNOWN)
+
+            if saving_mode == PowerSavingMode.UNKNOWN:
+                raise ValueError("API returned unexpected power saving mode '{0}'".format(response["mode"]))
+
+        return {
+            "mode": saving_mode
+        }
