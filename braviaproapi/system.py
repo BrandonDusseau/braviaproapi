@@ -338,3 +338,30 @@ class System(object):
                 raise BraviaApiError("The target device does not support the selected language.")
             else:
                 raise err
+
+    def set_power_saving_mode(self, mode):
+        self.bravia_client.initialize()
+
+        if type(mode) is not PowerSavingMode:
+            raise TypeError("mode must be a PowerSavingMode enum value")
+
+        if mode == PowerSavingMode.UNKNOWN:
+            raise ValueError("mode cannot be PowerSavingMode.UNKNOWN")
+
+        modes = {
+            PowerSavingMode.OFF: "off",
+            PowerSavingMode.LOW: "low",
+            PowerSavingMode.HIGH: "high",
+            PowerSavingMode.PICTURE_OFF: "pictureOff"
+        }
+        sent_mode = modes.get(mode, PowerSavingMode.UNKNOWN)
+
+        if sent_mode == PowerSavingMode.UNKNOWN:
+            raise ValueError("Internal error: unsupported PowerSavingMode selected")
+
+        self.http_client.request(
+            endpoint="system",
+            method="setPowerSavingMode",
+            params={"mode": sent_mode},
+            version="1.0"
+        )
