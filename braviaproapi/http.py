@@ -66,5 +66,7 @@ class Http(object):
             raise ValueError("The API response was in an unexpected format and cannot be processed.")
         if len(response["result"]) == 0:
             return None
+        elif len(response["result"]) > 1:
+            return response["result"]
         else:
             return response["result"][0]

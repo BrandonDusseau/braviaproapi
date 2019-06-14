@@ -193,3 +193,18 @@ class System(object):
         return {
             "mode": saving_mode
         }
+
+    def get_remote_control_info(self):
+        self.bravia_client.initialize()
+
+        response = self.http_client.request(endpoint="system", method="getRemoteControllerInfo", version="1.0")
+
+        if len(response) != 2:
+            raise ValueError("API returned unexpected format for remote control information.")
+
+        button_codes = {}
+
+        for button in response[1]:
+            button_codes[button["name"]] = button["value"]
+
+        return button_codes
