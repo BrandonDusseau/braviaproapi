@@ -208,3 +208,24 @@ class System(object):
             button_codes[button["name"]] = button["value"]
 
         return button_codes
+
+    def get_remote_access_status(self):
+        self.bravia_client.initialize()
+
+        response = self.http_client.request(
+            endpoint="system",
+            method="getRemoteDeviceSettings",
+            params={"target": "accessPermission"},
+            version="1.0"
+        )
+
+        if len(response) != 1:
+            raise ValueError("Unexpected getRemoteDeviceSettings response format")
+
+        if response[0]["currentValue"] == "on":
+            return True
+
+        if response[0]["currentValue"] == "false":
+            return False
+
+        raise ValueError("Unexpected getRemoteDeviceSettings response '{0}'".format(response["currentValue"]))
