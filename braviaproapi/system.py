@@ -319,3 +319,22 @@ class System(object):
                 raise BraviaApiError("The target device does not support setting LED status.")
             else:
                 raise err
+
+    def set_language(self, language):
+        self.bravia_client.initialize()
+
+        if type(language) is not str:
+            raise TypeError("language must be a string value")
+
+        try:
+            self.http_client.request(
+                endpoint="system",
+                method="setLanguage",
+                params={"language": language},
+                version="1.0"
+            )
+        except HttpError as err:
+            if err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
+                raise BraviaApiError("The target device does not support the selected language.")
+            else:
+                raise err
