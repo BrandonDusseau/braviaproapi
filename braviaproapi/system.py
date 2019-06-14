@@ -1,16 +1,14 @@
-from . import http
 from enum import Enum
 from dateutil import parser as date_parser
 from .errors import HttpError, BraviaApiError
 from .util import coalesce_none_or_empty
-from pprint import pprint
 
 
 # Error code definitions
 class ErrorCode(object):
+    ILLEGAL_ARGUMENT = 3
     ERR_CLOCK_NOT_SET = 7
     ILLEGAL_STATE = 7
-    ILLEGAL_ARGUMENT = 3
 
 
 # Possible LED modes returned by API
@@ -70,7 +68,7 @@ class System(object):
         if response["status"] == "active":
             return True
 
-        raise ValueError("Unexpected getPowerStatus response '{0}'".format(response["status"]))
+        raise BraviaApiError("Unexpected getPowerStatus response '{0}'".format(response["status"]))
 
     def get_current_time(self):
         self.bravia_client.initialize()
@@ -124,7 +122,7 @@ class System(object):
             led_mode = valid_modes.get(response["mode"], LedMode.UNKNOWN)
 
             if led_mode == LedMode.UNKNOWN:
-                raise ValueError("API returned unexpected LED mode '{0}'".format(response["mode"]))
+                raise BraviaApiError("API returned unexpected LED mode '{0}'".format(response["mode"]))
 
         return {
             "status": led_status,
@@ -136,8 +134,8 @@ class System(object):
 
         request_interface = interface or ""
 
-        if not isinstance(request_interface, str):
-            raise ValueError("interface argument must be a string")
+        if type(request_interface) is not str:
+            raise TypeError("interface argument must be a string")
 
         try:
             response = self.http_client.request(
@@ -188,7 +186,7 @@ class System(object):
             saving_mode = valid_modes.get(response["mode"], PowerSavingMode.UNKNOWN)
 
             if saving_mode == PowerSavingMode.UNKNOWN:
-                raise ValueError("API returned unexpected power saving mode '{0}'".format(response["mode"]))
+                raise BraviaApiError("API returned unexpected power saving mode '{0}'".format(response["mode"]))
 
         return {
             "mode": saving_mode
@@ -200,7 +198,7 @@ class System(object):
         response = self.http_client.request(endpoint="system", method="getRemoteControllerInfo", version="1.0")
 
         if len(response) != 2:
-            raise ValueError("API returned unexpected format for remote control information.")
+            raise BraviaApiError("API returned unexpected format for remote control information.")
 
         button_codes = {}
 
@@ -220,7 +218,7 @@ class System(object):
         )
 
         if len(response) != 1:
-            raise ValueError("API returned unexpected getRemoteDeviceSettings response format")
+            raise BraviaApiError("API returned unexpected getRemoteDeviceSettings response format")
 
         if response[0]["currentValue"] == "on":
             return True
@@ -228,7 +226,7 @@ class System(object):
         if response[0]["currentValue"] == "false":
             return False
 
-        raise ValueError(
+        raise BraviaApiError(
             "API returned unexpected getRemoteDeviceSettings response '{0}'".format(response["currentValue"])
         )
 
@@ -255,11 +253,11 @@ class System(object):
         response = self.http_client.request(endpoint="system", method="getSystemSupportedFunction", version="1.0")
 
         if len(response) != 1:
-            raise ValueError("API returned unexpected getSystemSupportedFunction response format")
+            raise BraviaApiError("API returned unexpected getSystemSupportedFunction response format")
 
         wol_info = response[0]
         if wol_info["option"] != "WOL":
-            raise ValueError("API returned unexpected option name '{0}'".format(wol_info["option"]))
+            raise BraviaApiError("API returned unexpected option name '{0}'".format(wol_info["option"]))
 
         return {
             "mac": wol_info["value"]
@@ -272,7 +270,7 @@ class System(object):
 
         enabled = response.get("enabled")
         if enabled is None or type(enabled) is not bool:
-            raise ValueError("API returned unexpected getWolMode response format")
+            raise BraviaApiError("API returned unexpected getWolMode response format")
 
         return enabled
 
@@ -302,7 +300,7 @@ class System(object):
         sent_mode = modes.get(mode, LedMode.UNKNOWN)
 
         if sent_mode == LedMode.UNKNOWN:
-            raise ValueError("Internal error: unsupported LedMode selected")
+            raise BraviaApiError("Internal error: unsupported LedMode selected")
 
         params = {
             "mode": sent_mode
@@ -357,7 +355,7 @@ class System(object):
         sent_mode = modes.get(mode, PowerSavingMode.UNKNOWN)
 
         if sent_mode == PowerSavingMode.UNKNOWN:
-            raise ValueError("Internal error: unsupported PowerSavingMode selected")
+            raise BraviaApiError("Internal error: unsupported PowerSavingMode selected")
 
         self.http_client.request(
             endpoint="system",
