@@ -229,3 +229,20 @@ class System(object):
             return False
 
         raise ValueError("Unexpected getRemoteDeviceSettings response '{0}'".format(response["currentValue"]))
+
+    def get_system_information(self):
+        self.bravia_client.initialize()
+
+        response = self.http_client.request(endpoint="system", method="getSystemInformation", version="1.0")
+
+        sys_info = {
+            "product": coalesce_none_or_empty(response.get("product")),
+            "language": coalesce_none_or_empty(response.get("language")),
+            "model": coalesce_none_or_empty(response.get("model")),
+            "serial": coalesce_none_or_empty(response.get("serial")),
+            "mac": coalesce_none_or_empty(response.get("macAddr")),
+            "name": coalesce_none_or_empty(response.get("name")),
+            "generation": coalesce_none_or_empty(response.get("generation"))
+        }
+
+        return sys_info
