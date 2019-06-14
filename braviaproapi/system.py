@@ -49,8 +49,8 @@ class System(object):
     def set_power_status(self, power_state):
         self.bravia_client.initialize()
 
-        if (not isinstance(power_state, bool)):
-            raise ValueError("power_state must be a boolean")
+        if type(power_state) is not bool:
+            raise TypeError("power_state must be a boolean type")
 
         self.http_client.request(
             endpoint="system",
