@@ -1,9 +1,6 @@
 from . import http, system
+from .errors import BraviaApiError
 from packaging import version
-
-
-class BraviaApiError(Exception):
-    pass
 
 
 class Bravia(object):

@@ -1,7 +1,7 @@
 from . import http
 from enum import Enum
 from dateutil import parser as date_parser
-from .http import HttpError
+from .errors import HttpError, BraviaApiError
 from .util import coalesce_none_or_empty
 from pprint import pprint
 
@@ -9,6 +9,7 @@ from pprint import pprint
 # Error code definitions
 class ErrorCode(object):
     ERR_CLOCK_NOT_SET = 7
+    ILLEGAL_STATE = 7
     ILLEGAL_ARGUMENT = 3
 
 
@@ -182,8 +183,7 @@ class System(object):
                 "off": PowerSavingMode.OFF,
                 "low": PowerSavingMode.LOW,
                 "high": PowerSavingMode.HIGH,
-                "pictureOff": PowerSavingMode.PICTURE_OFF,
-                "Off": LedMode.OFF
+                "pictureOff": PowerSavingMode.PICTURE_OFF
             }
             saving_mode = valid_modes.get(response["mode"], PowerSavingMode.UNKNOWN)
 
@@ -275,3 +275,47 @@ class System(object):
             raise ValueError("API returned unexpected getWolMode response format")
 
         return enabled
+
+    def request_reboot(self):
+        self.bravia_client.initialize()
+        self.http_client.request(endpoint="system", method="requestReboot", version="1.0")
+
+    def set_led_status(self, mode, enabled=None):
+        self.bravia_client.initialize()
+
+        if enabled is not None and type(enabled) is not bool:
+            raise TypeError("enabled must be a boolean value or None")
+
+        if type(mode) is not LedMode:
+            raise TypeError("mode must be an LedMode enum value")
+
+        if mode == LedMode.UNKNOWN:
+            raise ValueError("mode cannot be LedMode.UNKNOWN")
+
+        modes = {
+            LedMode.AUTO_BRIGHTNESS: "AutoBrightnessAdjust",
+            LedMode.DARK: "Dark",
+            LedMode.SIMPLE_RESPONSE: "SimpleResponse",
+            LedMode.DEMO: "Demo",
+            LedMode.OFF: "Off"
+        }
+        sent_mode = modes.get(mode, LedMode.UNKNOWN)
+
+        if sent_mode == LedMode.UNKNOWN:
+            raise ValueError("Internal error: unsupported LedMode selected")
+
+        params = {
+            "mode": sent_mode
+        }
+
+        # Some TVs will return an error if status is not supported, even if set to None.
+        if enabled is not None:
+            params["status"] = enabled
+
+        try:
+            self.http_client.request(endpoint="system", method="setLEDIndicatorStatus", params=params, version="1.1")
+        except HttpError as err:
+            if err.error_code == ErrorCode.ILLEGAL_STATE or err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
+                raise BraviaApiError("The target device does not support setting LED status.")
+            else:
+                raise err

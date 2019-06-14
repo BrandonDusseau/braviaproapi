@@ -1,11 +1,6 @@
 import json
 import requests
-
-
-class HttpError(Exception):
-    def __init__(self, message, error_code=None):
-        self.error_code = error_code
-        pass
+from .errors import HttpError
 
 
 class Http(object):
@@ -56,7 +51,10 @@ class Http(object):
             raise HttpError("Unable to deserialize API response. The response was: {0}".format(response.text()))
 
         if "error" in response:
-            raise HttpError(response["error"][1], error_code=response["error"][0])
+            raise HttpError(
+                "{0} (error {1})".format(response["error"][1], response["error"][0]),
+                error_code=response["error"][0]
+            )
 
         if "result" not in response:
             raise HttpError("The API response was malformed")
