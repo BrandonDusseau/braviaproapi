@@ -264,3 +264,14 @@ class System(object):
         return {
             "mac": wol_info["value"]
         }
+
+    def get_wake_on_lan_status(self):
+        self.bravia_client.initialize()
+
+        response = self.http_client.request(endpoint="system", method="getWolMode", version="1.0")
+
+        enabled = response.get("enabled")
+        if enabled is None or type(enabled) is not bool:
+            raise ValueError("API returned unexpected getWolMode response format")
+
+        return enabled
