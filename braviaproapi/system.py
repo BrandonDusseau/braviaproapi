@@ -220,7 +220,7 @@ class System(object):
         )
 
         if len(response) != 1:
-            raise ValueError("Unexpected getRemoteDeviceSettings response format")
+            raise ValueError("API returned unexpected getRemoteDeviceSettings response format")
 
         if response[0]["currentValue"] == "on":
             return True
@@ -228,7 +228,9 @@ class System(object):
         if response[0]["currentValue"] == "false":
             return False
 
-        raise ValueError("Unexpected getRemoteDeviceSettings response '{0}'".format(response["currentValue"]))
+        raise ValueError(
+            "API returned unexpected getRemoteDeviceSettings response '{0}'".format(response["currentValue"])
+        )
 
     def get_system_information(self):
         self.bravia_client.initialize()
@@ -246,3 +248,19 @@ class System(object):
         }
 
         return sys_info
+
+    def get_wake_on_lan_information(self):
+        self.bravia_client.initialize()
+
+        response = self.http_client.request(endpoint="system", method="getSystemSupportedFunction", version="1.0")
+
+        if len(response) != 1:
+            raise ValueError("API returned unexpected getSystemSupportedFunction response format")
+
+        wol_info = response[0]
+        if wol_info["option"] != "WOL":
+            raise ValueError("API returned unexpected option name '{0}'".format(wol_info["option"]))
+
+        return {
+            "mac": wol_info["value"]
+        }
