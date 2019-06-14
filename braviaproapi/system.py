@@ -365,3 +365,16 @@ class System(object):
             params={"mode": sent_mode},
             version="1.0"
         )
+
+    def set_wake_on_lan_status(self, enabled):
+        self.bravia_client.initialize()
+
+        if type(enabled) is not bool:
+            raise TypeError("enabled must be a boolean value")
+
+        self.http_client.request(
+            endpoint="system",
+            method="setWolMode",
+            params={"enabled": enabled},
+            version="1.0"
+        )
