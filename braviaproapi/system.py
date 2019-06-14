@@ -30,12 +30,12 @@ class System(object):
     def power_on(self):
         self.bravia_client.initialize()
 
-        self.set_power(True)
+        self.set_power_status(True)
 
     def power_off(self):
         self.bravia_client.initialize()
 
-        self.set_power(False)
+        self.set_power_status(False)
 
     def set_power_status(self, power_state):
         self.bravia_client.initialize()
@@ -43,7 +43,12 @@ class System(object):
         if (not isinstance(power_state, bool)):
             raise ValueError("power_state must be a boolean")
 
-        self.http_client.request(endpoint="system", method="setPowerStatus", params={"status": False}, version="1.0")
+        self.http_client.request(
+            endpoint="system",
+            method="setPowerStatus",
+            params={"status": power_state},
+            version="1.0"
+        )
 
     def get_power_status(self):
         self.bravia_client.initialize()
