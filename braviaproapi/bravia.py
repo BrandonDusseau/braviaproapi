@@ -1,4 +1,4 @@
-from . import http, system, videoscreen
+from . import http, system, videoscreen, encryption
 from .errors import BraviaApiError
 from packaging import version
 
@@ -10,6 +10,7 @@ class Bravia(object):
         self.http_client = http.Http(host=host, psk=passcode)
         self.system = system.System(bravia_client=self, http_client=self.http_client)
         self.videoscreen = videoscreen.VideoScreen(bravia_client=self, http_client=self.http_client)
+        self.encryption = encryption.Encryption(bravia_client=self, http_client=self.http_client)
 
     def initialize(self):
         if self.initialized:
