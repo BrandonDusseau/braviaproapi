@@ -1,5 +1,4 @@
 from enum import Enum
-from dateutil import parser as date_parser
 from .errors import HttpError, BraviaApiError
 from .util import coalesce_none_or_empty
 
@@ -9,6 +8,13 @@ class ErrorCode(object):
     ILLEGAL_ARGUMENT = 3
     ERR_CLOCK_NOT_SET = 7
     ILLEGAL_STATE = 7
+
+
+class AppFeature(Enum):
+    UNKNOWN = 0
+    TEXT_INPUT = 1
+    CURSOR_DISPLAY = 2
+    WEB_BROWSE = 3
 
 
 class AppControl(object):
@@ -44,3 +50,34 @@ class AppControl(object):
             apps.append(app)
 
         return apps
+
+    def get_application_feature_status(self):
+        self.bravia_client.initialize()
+
+        response = self.http_client.request(endpoint="appControl", method="getApplicationStatusList", version="1.0")
+
+        if type(response) is not list:
+            raise BraviaApiError("API returned unexpected response format for getApplicationStatusList")
+
+        supported_features = {
+            "textInput": AppFeature.TEXT_INPUT,
+            "cursorDisplay": AppFeature.CURSOR_DISPLAY,
+            "webBrowse": AppFeature.WEB_BROWSE
+        }
+
+        enabled_features = {
+            AppFeature.TEXT_INPUT: False,
+            AppFeature.CURSOR_DISPLAY: False,
+            AppFeature.WEB_BROWSE: False
+        }
+
+        for feature in response:
+            feature_type = supported_features.get(feature["name"], AppFeature.UNKNOWN)
+
+            # Skip unsupported features
+            if feature_type == AppFeature.UNKNOWN:
+                continue
+
+            enabled_features[feature_type] = True if feature["status"] == "on" else False
+
+        return enabled_features
