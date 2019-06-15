@@ -8,9 +8,9 @@ class Bravia(object):
 
     def __init__(self, host, passcode):
         self.http_client = http.Http(host=host, psk=passcode)
+        self.encryption = encryption.Encryption(bravia_client=self, http_client=self.http_client)
         self.system = system.System(bravia_client=self, http_client=self.http_client)
         self.videoscreen = videoscreen.VideoScreen(bravia_client=self, http_client=self.http_client)
-        self.encryption = encryption.Encryption(bravia_client=self, http_client=self.http_client)
         self.appcontrol = appcontrol.AppControl(bravia_client=self, http_client=self.http_client)
 
     def initialize(self):

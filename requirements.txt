@@ -1,2 +1,6 @@
 requests
+packaging
+pycryptodome
+python-dateutil
 pprint
+M2Crypto

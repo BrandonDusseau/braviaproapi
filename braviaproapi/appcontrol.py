@@ -81,3 +81,15 @@ class AppControl(object):
             enabled_features[feature_type] = True if feature["status"] == "on" else False
 
         return enabled_features
+
+    def get_text_form(self):
+        self.bravia_client.initialize()
+
+        response = self.http_client.request(
+            endpoint="appControl",
+            method="getTextForm",
+            params={"encKey": self.bravia_client.encryption.get_encrypted_common_key()},
+            version="1.1"
+        )
+
+        return response
