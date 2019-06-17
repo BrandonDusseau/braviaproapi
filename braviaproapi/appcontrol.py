@@ -1,6 +1,7 @@
 from enum import Enum
 from .errors import HttpError, BraviaApiError
 from .util import coalesce_none_or_empty
+from pprint import pprint
 
 
 # Error code definitions
@@ -8,6 +9,8 @@ class ErrorCode(object):
     ILLEGAL_ARGUMENT = 3
     ERR_CLOCK_NOT_SET = 7
     ILLEGAL_STATE = 7
+    ENCRYPTION_ERROR = 40002
+    CLIENT_MUST_WAIT = 40003
 
 
 class AppFeature(Enum):
@@ -85,11 +88,31 @@ class AppControl(object):
     def get_text_form(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(
-            endpoint="appControl",
-            method="getTextForm",
-            params={"encKey": self.bravia_client.encryption.get_encrypted_common_key()},
-            version="1.1"
-        )
+        encrypted_key = self.bravia_client.encryption.get_rsa_encrypted_common_key()
 
-        return response
+        if encrypted_key is None:
+            raise BraviaApiError(
+                "This device does not support the appropriate encryption needed to access text fields."
+            )
+
+        try:
+            response = self.http_client.request(
+                endpoint="appControl",
+                method="getTextForm",
+                params={"encKey": encrypted_key},
+                version="1.1"
+            )
+        except HttpError as err:
+            if err.error_code == ErrorCode.CLIENT_MUST_WAIT or err.error_code == ErrorCode.ILLEGAL_STATE:
+                return None
+            elif err.error_code == ErrorCode.ENCRYPTION_ERROR:
+                raise BraviaApiError("Internal error: The target device rejected our encryption key")
+            else:
+                raise err
+
+        if "text" not in response:
+            raise BraviaApiError("API returned unexpected response format for getTextForm")
+
+        decrypted_text = self.bravia_client.encryption.aes_decrypt_b64(response["text"])
+
+        return decrypted_text

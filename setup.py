@@ -21,6 +21,6 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
-    install_requires=["requests", "python-dateutil", "packaging", "pycryptodome", "M2Crypto"],
+    install_requires=["requests", "python-dateutil", "packaging", "pycryptodome"],
     keywords='sony bravia television remote control library'
 )

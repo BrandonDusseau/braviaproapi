@@ -1,9 +1,9 @@
 from .errors import HttpError, BraviaApiError
-from base64 import b64encode
-from Crypto.Cipher import AES
+from base64 import b64encode, b64decode
+from Crypto.Cipher import AES, PKCS1_v1_5
+from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
-from Crypto.Util.Padding import pad
-from M2Crypto import RSA, BIO
+from Crypto.Util.Padding import pad, unpad
 from pprint import pprint
 
 
@@ -15,7 +15,8 @@ class Encryption(object):
     def __init__(self, bravia_client, http_client):
         self.bravia_client = bravia_client
         self.http_client = http_client
-        self.common_key = self.generate_common_key()
+        self.aes_common_key = get_random_bytes(16)
+        self.aes_initialization_vector = get_random_bytes(AES.block_size)
 
     def get_public_key(self):
         self.bravia_client.initialize()
@@ -38,29 +39,35 @@ class Encryption(object):
 
         return response["publicKey"]
 
-    def generate_common_key(self):
-        return get_random_bytes(16)
-
-    def get_encrypted_common_key(self):
-        pubkey_base64 = self.get_public_key()
+    def get_rsa_encrypted_common_key(self):
+        try:
+            pubkey_base64 = self.get_public_key()
+        except [BraviaApiError, HttpError]:
+            return None
 
         if pubkey_base64 is None:
             return None
 
-        # public_key = RSA.import_key(b64decode(pubkey_base64))
-        # cipher = PKCS1_v1_5.new(public_key)
-        # encrypted_key = cipher.encrypt(self.common_key)
-        x509_pubkey = "-----BEGIN PUBLIC KEY-----\n{0}\n-----END PUBLIC KEY-----".format(pubkey_base64)
-        bio = BIO.MemoryBuffer(x509_pubkey.encode("utf-8"))
-        public_key = RSA.load_pub_key_bio(bio)
-        encrypted_key = public_key.public_encrypt(self.common_key, RSA.pkcs1_padding)
+        # Sony's server requires the AES key's hex representation to be contatenated with the
+        # initialization vector's hex representation before encryption.
+        # This is undocumented.
+        aes_key_to_encrypt = self.aes_common_key.hex() + ":" + self.aes_initialization_vector.hex()
+
+        public_key = RSA.import_key(b64decode(pubkey_base64))
+        cipher = PKCS1_v1_5.new(public_key)
+        encrypted_key = cipher.encrypt(aes_key_to_encrypt.encode("utf-8"))
 
         return b64encode(encrypted_key).decode("utf-8")
 
-    def encrypt(self, message):
-        cipher = AES.new(self.common_key, AES.MODE_CBC)
-        ciphertext = cipher.encrypt(pad(message.encode(), AES.block_size))
-
-        pprint(ciphertext)
+    def aes_encrypt_b64(self, message):
+        cipher = AES.new(self.aes_common_key, AES.MODE_CBC, self.aes_initialization_vector)
+        ciphertext = cipher.encrypt(pad(message.encode("utf-8"), AES.block_size))
 
         return b64encode(ciphertext).decode("utf-8")
+
+    def aes_decrypt_b64(self, message):
+        decoded_message = b64decode(message)
+        cipher = AES.new(self.aes_common_key, AES.MODE_CBC, self.aes_initialization_vector)
+        decrypted_message = unpad(cipher.decrypt(decoded_message), AES.block_size)
+
+        return decrypted_message.decode("utf-8")
