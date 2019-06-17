@@ -23,8 +23,7 @@ class Http(object):
 
         request_params = []
         if params is not None:
-            for param_name in params:
-                request_params.append({param_name: params[param_name]})
+            request_params.append(params)
 
         payload = {
             "method": method,

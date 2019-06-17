@@ -1,5 +1,6 @@
 from enum import Enum
-from .errors import HttpError, BraviaApiError, BraviaAppLaunchAlreadyInProgressError, BraviaAppLaunchError
+from .errors import HttpError, BraviaApiError, BraviaAppLaunchAlreadyInProgressError, \
+    BraviaAppLaunchError, BraviaNoFocusedTextFieldError
 from .util import coalesce_none_or_empty
 
 
@@ -110,7 +111,7 @@ class AppControl(object):
             elif err.error_code == ErrorCode.ENCRYPTION_ERROR:
                 raise BraviaApiError("Internal error: The target device rejected our encryption key")
             else:
-                raise err
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
 
         if "text" not in response:
             raise BraviaApiError("API returned unexpected response format for getTextForm")
@@ -128,7 +129,7 @@ class AppControl(object):
             if err.error_code == ErrorCode.ILLEGAL_STATE:
                 raise BraviaApiError("The target device must be powered on to get web app status")
             else:
-                raise err
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
 
         return {
             "active": True if response.get("active") == "true" else False,
@@ -158,5 +159,37 @@ class AppControl(object):
             elif err.error_code == ErrorCode.APP_LAUNCH_IN_PROGRESS:
                 # This is actually a success message, so ignore it
                 pass
+            else:
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+
+    def set_text_form(self, text):
+        self.bravia_client.initialize()
+
+        if type(text) is not str:
+            raise TypeError("text must be a string type")
+
+        encrypted_key = self.bravia_client.encryption.get_rsa_encrypted_common_key()
+
+        if encrypted_key is None:
+            raise BraviaApiError(
+                "This device does not support the appropriate encryption needed to access text fields."
+            )
+
+        encrypted_text = self.bravia_client.encryption.aes_encrypt_b64(text)
+
+        try:
+            self.http_client.request(
+                endpoint="appControl",
+                method="setTextForm",
+                params={"encKey": encrypted_key, "text": encrypted_text},
+                version="1.1"
+            )
+        except HttpError as err:
+            if err.error_code == ErrorCode.ILLEGAL_STATE:
+                raise BraviaNoFocusedTextFieldError(
+                    "The target device does not currently have a writable text field focused."
+                )
+            elif err.error_code == ErrorCode.ENCRYPTION_ERROR:
+                raise BraviaApiError("Internal error: The target device rejected our encryption key")
             else:
                 raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))

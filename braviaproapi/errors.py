@@ -14,3 +14,6 @@ class BraviaAppLaunchAlreadyInProgressError(Exception):
 
 class BraviaAppLaunchError(Exception):
     pass
+
+class BraviaNoFocusedTextFieldError(Exception):
+    pass
