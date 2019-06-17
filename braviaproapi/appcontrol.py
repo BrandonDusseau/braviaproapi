@@ -14,6 +14,7 @@ class ErrorCode(object):
     APP_REQUEST_ALREADY_PROCESSING = 41400
     APP_FAILED_TO_LAUNCH = 41401
     APP_LAUNCH_IN_PROGRESS = 41402
+    APP_FAILED_TO_TERMINATE = 41403
 
 
 class AppFeature(Enum):
@@ -191,5 +192,17 @@ class AppControl(object):
                 )
             elif err.error_code == ErrorCode.ENCRYPTION_ERROR:
                 raise BraviaApiError("Internal error: The target device rejected our encryption key")
+            else:
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+
+    def terminate_all_apps(self):
+        self.bravia_client.initialize()
+
+        try:
+            self.http_client.request(endpoint="appControl", method="terminateApps", version="1.0")
+        except HttpError as err:
+            if err.error_code == ErrorCode.APP_FAILED_TO_TERMINATE:
+                # Some apps may not be allowed to be terminated. This is an expected response in that case.
+                pass
             else:
                 raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
