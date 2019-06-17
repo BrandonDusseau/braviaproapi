@@ -1,7 +1,6 @@
 from enum import Enum
 from .errors import HttpError, BraviaApiError
 from .util import coalesce_none_or_empty
-from pprint import pprint
 
 
 # Error code definitions
@@ -116,3 +115,19 @@ class AppControl(object):
         decrypted_text = self.bravia_client.encryption.aes_decrypt_b64(response["text"])
 
         return decrypted_text
+
+    def get_web_app_status(self):
+        self.bravia_client.initialize()
+
+        try:
+            response = self.http_client.request(endpoint="appControl", method="getWebAppStatus", version="1.0")
+        except HttpError as err:
+            if err.error_code == ErrorCode.ILLEGAL_STATE:
+                raise BraviaApiError("The target device must be powered on to get web app status")
+            else:
+                raise err
+
+        return {
+            "active": True if response.get("active") == "true" else False,
+            "url": coalesce_none_or_empty(response.get("url"))
+        }
