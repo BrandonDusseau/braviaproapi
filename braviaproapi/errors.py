@@ -6,3 +6,11 @@ class HttpError(Exception):
     def __init__(self, message, error_code=None):
         self.error_code = error_code
         pass
+
+
+class BraviaAppLaunchAlreadyInProgressError(Exception):
+    pass
+
+
+class BraviaAppLaunchError(Exception):
+    pass

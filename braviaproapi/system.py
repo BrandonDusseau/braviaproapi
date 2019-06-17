@@ -82,7 +82,7 @@ class System(object):
             if (err.error_code == ErrorCode.ERR_CLOCK_NOT_SET):
                 return None
             else:
-                raise err
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
 
     def get_interface_information(self):
         response = self.http_client.request(endpoint="system", method="getInterfaceInformation", version="1.0")
@@ -149,7 +149,7 @@ class System(object):
             if (err.error_code == ErrorCode.ILLEGAL_ARGUMENT):
                 return None
             else:
-                raise err
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
 
         network_interfaces = []
         for iface in response:
@@ -316,7 +316,7 @@ class System(object):
             if err.error_code == ErrorCode.ILLEGAL_STATE or err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
                 raise BraviaApiError("The target device does not support setting LED status.")
             else:
-                raise err
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
 
     def set_language(self, language):
         self.bravia_client.initialize()
@@ -335,7 +335,7 @@ class System(object):
             if err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
                 raise BraviaApiError("The target device does not support the selected language.")
             else:
-                raise err
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
 
     def set_power_saving_mode(self, mode):
         self.bravia_client.initialize()

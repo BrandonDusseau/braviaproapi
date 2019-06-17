@@ -4,7 +4,6 @@ from Crypto.Cipher import AES, PKCS1_v1_5
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
-from pprint import pprint
 
 
 class ErrorCode(object):
@@ -32,7 +31,7 @@ class Encryption(object):
             if err.error_code == ErrorCode.ERR_KEY_DOES_NOT_EXIST:
                 return None
             else:
-                raise err
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
 
         if "publicKey" not in response:
             raise BraviaApiError("API returned unexpected response format for getPublicKey")

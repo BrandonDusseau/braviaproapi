@@ -1,5 +1,5 @@
 from enum import Enum
-from .errors import HttpError, BraviaApiError
+from .errors import HttpError, BraviaApiError, BraviaAppLaunchAlreadyInProgressError, BraviaAppLaunchError
 from .util import coalesce_none_or_empty
 
 
@@ -10,6 +10,9 @@ class ErrorCode(object):
     ILLEGAL_STATE = 7
     ENCRYPTION_ERROR = 40002
     CLIENT_MUST_WAIT = 40003
+    APP_REQUEST_ALREADY_PROCESSING = 41400
+    APP_FAILED_TO_LAUNCH = 41401
+    APP_LAUNCH_IN_PROGRESS = 41402
 
 
 class AppFeature(Enum):
@@ -131,3 +134,29 @@ class AppControl(object):
             "active": True if response.get("active") == "true" else False,
             "url": coalesce_none_or_empty(response.get("url"))
         }
+
+    def set_active_app(self, uri):
+        self.bravia_client.initialize()
+
+        if type(uri) is not str:
+            raise TypeError("uri must be a string type")
+
+        try:
+            self.http_client.request(
+                endpoint="appControl",
+                method="setActiveApp",
+                params={"uri": uri},
+                version="1.0"
+            )
+        except HttpError as err:
+            if err.error_code == ErrorCode.APP_REQUEST_ALREADY_PROCESSING:
+                raise BraviaAppLaunchAlreadyInProgressError(
+                    "Another app is currently in the process of launching"
+                )
+            elif err.error_code == ErrorCode.APP_FAILED_TO_LAUNCH:
+                raise BraviaAppLaunchError("The app failed to launch")
+            elif err.error_code == ErrorCode.APP_LAUNCH_IN_PROGRESS:
+                # This is actually a success message, so ignore it
+                pass
+            else:
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))

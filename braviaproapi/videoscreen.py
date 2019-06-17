@@ -54,4 +54,4 @@ class VideoScreen(object):
                         " current input")
                 )
             else:
-                raise err
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
