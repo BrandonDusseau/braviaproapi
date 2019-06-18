@@ -1,12 +1,16 @@
+import re
 from enum import Enum
 from .errors import HttpError, BraviaApiError
 from .util import coalesce_none_or_empty
+from pprint import pprint
 
 
 # Error code definitions
 class ErrorCode(object):
     ILLEGAL_ARGUMENT = 3
     ILLEGAL_STATE = 7
+    TARGET_NOT_SUPPORTED = 40800
+    VOLUME_OUT_OF_RANGE = 40801
 
 
 class AudioOutputs(Enum):
@@ -196,4 +200,70 @@ class Audio(object):
             version="1.0"
         )
 
-    
+    def set_volume_level(self, volume, show_ui=True, device=None):
+        if type(volume) is not int:
+            raise TypeError("volume must be an integer value")
+
+        self.set_volume(volume, show_ui, device)
+
+    def increase_volume(self, increase_by=1, show_ui=True, device=None):
+        if type(increase_by) is not int:
+            raise TypeError("increase_by must be an integer value")
+
+        self.set_volume("+" + str(increase_by), show_ui, device)
+
+    def decrease_volume(self, decrease_by=1, show_ui=True, device=None):
+        if type(decrease_by) is not int:
+            raise TypeError("decrease_by must be an integer value")
+
+        self.set_volume("-" + str(decrease_by), show_ui, device)
+
+    def set_volume(self, volume, show_ui=True, device=None):
+        self.bravia_client.initialize()
+
+        if device is not None and type(device) is not VolumeDevice:
+            raise TypeError("device must be a VolumeDevice enum type or None")
+
+        if device == VolumeDevice.UNKNOWN:
+            raise ValueError("device cannot be VolumeDevice.UNKNOWN")
+
+        if type(volume) is not int and type(volume) is not str:
+            raise TypeError("volume must be an int or string")
+
+        if type(volume) is str:
+            pprint(volume)
+            if re.match(r'^[+-]\d+$', volume) is None:
+                raise ValueError("volume must be in the format 1, +1, or -1")
+
+        if type(show_ui) is not bool:
+            raise TypeError("show_ui must be a boolean value")
+
+        if device is None:
+            target = ""
+        else:
+            valid_requested_devices = {
+                VolumeDevice.SPEAKERS: "speaker",
+                VolumeDevice.HEADPHONES: "headphone"
+            }
+            target = valid_requested_devices.get(device)
+            if target is None:
+                raise BraviaApiError("Internal error: Invalid VolumeDevice specified")
+
+        try:
+            self.http_client.request(
+                endpoint="audio",
+                method="setAudioVolume",
+                params={
+                    "target": target,
+                    "volume": str(volume),
+                    "ui": "on" if show_ui else "off"
+                },
+                version="1.2"
+            )
+        except HttpError as err:
+            if err.error_code == ErrorCode.TARGET_NOT_SUPPORTED:
+                raise BraviaApiError("The target device does not support controlling volume of the specified output.")
+            if err.error_code == ErrorCode.VOLUME_OUT_OF_RANGE:
+                raise BraviaApiError("The specified volume value is out of range for the target device.")
+            else:
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
