@@ -7,7 +7,6 @@ from .util import coalesce_none_or_empty
 # Error code definitions
 class ErrorCode(object):
     ILLEGAL_ARGUMENT = 3
-    ERR_CLOCK_NOT_SET = 7
     ILLEGAL_STATE = 7
     ENCRYPTION_ERROR = 40002
     CLIENT_MUST_WAIT = 40003
@@ -79,7 +78,7 @@ class AppControl(object):
         }
 
         for feature in response:
-            feature_type = supported_features.get(feature["name"], AppFeature.UNKNOWN)
+            feature_type = supported_features.get(feature.get("name"), AppFeature.UNKNOWN)
 
             # Skip unsupported features
             if feature_type == AppFeature.UNKNOWN:

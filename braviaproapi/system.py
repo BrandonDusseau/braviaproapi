@@ -119,10 +119,10 @@ class System(object):
                 "SimpleResponse": LedMode.SIMPLE_RESPONSE,
                 "Off": LedMode.OFF
             }
-            led_mode = valid_modes.get(response["mode"], LedMode.UNKNOWN)
+            led_mode = valid_modes.get(response.get("mode"), LedMode.UNKNOWN)
 
             if led_mode == LedMode.UNKNOWN:
-                raise BraviaApiError("API returned unexpected LED mode '{0}'".format(response["mode"]))
+                raise BraviaApiError("API returned unexpected LED mode '{0}'".format(response.get("mode")))
 
         return {
             "status": led_status,
@@ -146,10 +146,13 @@ class System(object):
             )
         except HttpError as err:
             # An illegal argument error indicates the requested interface does not exist. Gracefully handle this.
-            if (err.error_code == ErrorCode.ILLEGAL_ARGUMENT):
+            if err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
                 return None
             else:
                 raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+
+        if type(response) is not list:
+            raise BraviaApiError("API returned unexpected response format for getNetworkSettings")
 
         network_interfaces = []
         for iface in response:
@@ -183,10 +186,10 @@ class System(object):
                 "high": PowerSavingMode.HIGH,
                 "pictureOff": PowerSavingMode.PICTURE_OFF
             }
-            saving_mode = valid_modes.get(response["mode"], PowerSavingMode.UNKNOWN)
+            saving_mode = valid_modes.get(response.get("mode"), PowerSavingMode.UNKNOWN)
 
             if saving_mode == PowerSavingMode.UNKNOWN:
-                raise BraviaApiError("API returned unexpected power saving mode '{0}'".format(response["mode"]))
+                raise BraviaApiError("API returned unexpected power saving mode '{0}'".format(response.get("mode")))
 
         return {
             "mode": saving_mode

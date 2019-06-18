@@ -1,4 +1,4 @@
-# py-bravia-pro-api
+# braviaproapi
 
 **WARNING:** This library is in active development and is not ready for use. It is not yet available
 on PyPI and its name and functionality are likely to change without notice.
