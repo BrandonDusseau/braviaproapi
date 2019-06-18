@@ -176,3 +176,24 @@ class Audio(object):
             devices.append(device_info)
 
         return devices
+
+    def mute(self):
+        self.set_mute(True)
+
+    def unmute(self):
+        self.set_mute(False)
+
+    def set_mute(self, mute):
+        self.bravia_client.initialize()
+
+        if type(mute) is not bool:
+            raise TypeError("mute must be a boolean value")
+
+        self.http_client.request(
+            endpoint="audio",
+            method="setAudioMute",
+            params={"status": mute},
+            version="1.0"
+        )
+
+    
