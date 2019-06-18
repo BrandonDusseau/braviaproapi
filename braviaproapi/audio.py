@@ -22,10 +22,17 @@ class TvPosition(Enum):
     TABLE_TOP = 1
     WALL_MOUNT = 2
 
+
 class SubwooferPhase(Enum):
     UNKNOWN = 0
     NORMAL = 1
     REVERSE = 2
+
+
+class VolumeDevice(Enum):
+    UNKNOWN = 0
+    SPEAKERS = 1
+    HEADPHONES = 2
 
 
 class Audio(object):
@@ -137,3 +144,35 @@ class Audio(object):
                 continue
 
         return settings
+
+    def get_volume_information(self):
+        self.bravia_client.initialize()
+
+        response = self.http_client.request(endpoint="audio", method="getVolumeInformation", version="1.0")
+
+        if type(response) is not list:
+            raise BraviaApiError("API returned unexpected response format for getVolumeInformation.")
+
+        valid_devices = {
+            "speaker": VolumeDevice.SPEAKERS,
+            "headphone": VolumeDevice.HEADPHONES
+        }
+
+        devices = []
+        for this_device in response:
+            device_type = valid_devices.get(this_device.get("target"))
+
+            # Ignore unexpected device types
+            if device_type is None:
+                continue
+
+            device_info = {
+                "type": device_type,
+                "volume": this_device.get("volume"),
+                "muted": True if this_device.get("mute") else False,
+                "min_volume": this_device.get("minVolume"),
+                "max_volume": this_device.get("maxVolume")
+            }
+            devices.append(device_info)
+
+        return devices
