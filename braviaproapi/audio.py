@@ -1,7 +1,6 @@
 import re
 from enum import Enum
 from .errors import HttpError, BraviaApiError
-from pprint import pprint
 
 
 # Error code definitions
@@ -37,6 +36,15 @@ class VolumeDevice(Enum):
     UNKNOWN = 0
     SPEAKERS = 1
     HEADPHONES = 2
+
+
+class SpeakerSetting(Enum):
+    UNKNOWN = 0
+    TV_POSITION = 1
+    SUBWOOFER_LEVEL = 2
+    SUBWOOFER_FREQUENCY = 3
+    SUBWOOFER_PHASE = 4
+    SUBWOOFER_POWER = 5
 
 
 class Audio(object):
@@ -97,11 +105,11 @@ class Audio(object):
             raise BraviaApiError("API returned unexpected response format for getSoundSettings.")
 
         settings = {
-            "tv_position": None,
-            "subwoofer_level": None,
-            "subwoofer_frequency": None,
-            "subwoofer_phase": None,
-            "subwoofer_power": None
+            SpeakerSetting.TV_POSITION: None,
+            SpeakerSetting.SUBWOOFER_LEVEL: None,
+            SpeakerSetting.SUBWOOFER_FREQUENCY: None,
+            SpeakerSetting.SUBWOOFER_PHASE: None,
+            SpeakerSetting.SUBWOOFER_POWER: None
         }
 
         valid_positions = {
@@ -123,13 +131,13 @@ class Audio(object):
                     raise BraviaApiError(
                         "API returned unexpected TV position '{0}'".format(setting.get("currentValue"))
                     )
-                settings["tv_position"] = position
+                settings[SpeakerSetting.TV_POSITION] = position
 
             elif target == "subwooferLevel":
-                settings["subwoofer_level"] = setting.get("currentValue")
+                settings[SpeakerSetting.SUBWOOFER_LEVEL] = setting.get("currentValue")
 
             elif target == "subwooferFreq":
-                settings["subwoofer_frequency"] = setting.get("currentValue")
+                settings[SpeakerSetting.SUBWOOFER_FREQUENCY] = setting.get("currentValue")
 
             elif target == "subwooferPhase":
                 phase = valid_sub_phases.get(setting.get("currentValue"), SubwooferPhase.UNKNOWN)
@@ -137,10 +145,10 @@ class Audio(object):
                     raise BraviaApiError(
                         "API returned unexpected subwoofer phase '{0}'".format(setting.get("currentValue"))
                     )
-                settings["subwoofer_phase"] = phase
+                settings[SpeakerSetting.SUBWOOFER_PHASE] = phase
 
             elif target == "subwooferPower":
-                settings["subwoofer_power"] = True if setting.get("currentValue") == "on" else False
+                settings[SpeakerSetting.SUBWOOFER_POWER] = True if setting.get("currentValue") == "on" else False
 
             # Skip settings that are unrecognized
             else:
@@ -203,21 +211,21 @@ class Audio(object):
         if type(volume) is not int:
             raise TypeError("volume must be an integer value")
 
-        self.set_volume(volume, show_ui, device)
+        self.__set_volume(volume, show_ui, device)
 
     def increase_volume(self, increase_by=1, show_ui=True, device=None):
         if type(increase_by) is not int:
             raise TypeError("increase_by must be an integer value")
 
-        self.set_volume("+" + str(increase_by), show_ui, device)
+        self.__set_volume("+" + str(increase_by), show_ui, device)
 
     def decrease_volume(self, decrease_by=1, show_ui=True, device=None):
         if type(decrease_by) is not int:
             raise TypeError("decrease_by must be an integer value")
 
-        self.set_volume("-" + str(decrease_by), show_ui, device)
+        self.__set_volume("-" + str(decrease_by), show_ui, device)
 
-    def set_volume(self, volume, show_ui=True, device=None):
+    def __set_volume(self, volume, show_ui=True, device=None):
         self.bravia_client.initialize()
 
         if device is not None and type(device) is not VolumeDevice:
@@ -230,7 +238,6 @@ class Audio(object):
             raise TypeError("volume must be an int or string")
 
         if type(volume) is str:
-            pprint(volume)
             if re.match(r'^[+-]\d+$', volume) is None:
                 raise ValueError("volume must be in the format 1, +1, or -1")
 
@@ -299,3 +306,134 @@ class Audio(object):
                 raise BraviaApiError("Unable to set sound output device")
             else:
                 raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+
+    def set_speaker_settings(self, settings):
+        self.bravia_client.initialize()
+
+        if type(settings) is not dict:
+            raise TypeError("settings must be a dict type")
+
+        valid_targets = {
+            SpeakerSetting.TV_POSITION: "tvPosition",
+            SpeakerSetting.SUBWOOFER_LEVEL: "subwooferLevel",
+            SpeakerSetting.SUBWOOFER_FREQUENCY: "subwooferFreq",
+            SpeakerSetting.SUBWOOFER_PHASE: "subwooferPhase",
+            SpeakerSetting.SUBWOOFER_POWER: "subwooferPower"
+        }
+
+        settings_to_request = []
+
+        if settings.get(SpeakerSetting.TV_POSITION) is not None:
+            position = self.__get_selected_tv_position(settings.get(SpeakerSetting.TV_POSITION))
+            settings_to_request.append({"target": valid_targets[SpeakerSetting.TV_POSITION], "value": position})
+
+        if settings.get(SpeakerSetting.SUBWOOFER_LEVEL) is not None:
+            level = self.__get_selected_sub_level(settings.get(SpeakerSetting.SUBWOOFER_LEVEL))
+            settings_to_request.append({"target": valid_targets[SpeakerSetting.SUBWOOFER_LEVEL], "value": level})
+
+        if settings.get(SpeakerSetting.SUBWOOFER_FREQUENCY) is not None:
+            frequency = self.__get_selected_sub_freq(settings.get(SpeakerSetting.SUBWOOFER_FREQUENCY))
+            settings_to_request.append({
+                "target": valid_targets[SpeakerSetting.SUBWOOFER_FREQUENCY],
+                "value": frequency
+            })
+
+        if settings.get(SpeakerSetting.SUBWOOFER_PHASE) is not None:
+            phase = self.__get_selected_sub_phase(settings.get(SpeakerSetting.SUBWOOFER_PHASE))
+            settings_to_request.append({"target": valid_targets[SpeakerSetting.SUBWOOFER_PHASE], "value": phase})
+
+        if settings.get(SpeakerSetting.SUBWOOFER_POWER) is not None:
+            power = self.__get_selected_sub_power(settings.get(SpeakerSetting.SUBWOOFER_POWER))
+            settings_to_request.append({
+                "target": valid_targets[SpeakerSetting.SUBWOOFER_POWER],
+                "value": power
+            })
+
+        if len(settings_to_request) == 0:
+            raise ValueError("No valid settings were specified")
+
+        try:
+            self.http_client.request(
+                endpoint="audio",
+                method="setSpeakerSettings",
+                params={"settings": settings_to_request},
+                version="1.0"
+            )
+        except HttpError as err:
+            if err.error_code == ErrorCode.MULTIPLE_SETTINGS_FAILED:
+                raise BraviaApiError("One or more settings failed to apply, but some may have been successful.")
+            else:
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+
+    def __get_selected_tv_position(self, value):
+        if type(value) is not TvPosition:
+            raise TypeError(
+                "Setting value for SpeakerSetting.TV_POSITION must be specified as a TvPosition enum type"
+            )
+
+        if value == TvPosition.UNKNOWN:
+            raise ValueError("Setting value for SpeakerSetting.TV_POSITION cannot be TvPosition.UNKNOWN")
+
+        valid_positions = {
+            TvPosition.TABLE_TOP: "tableTop",
+            TvPosition.WALL_MOUNT: "wallMount"
+        }
+
+        position = valid_positions.get(value, TvPosition.UNKNOWN)
+
+        if position == TvPosition.UNKNOWN:
+            raise BraviaApiError("Internal error: unsupported TvPosition selected")
+
+        return position
+
+    def __get_selected_sub_level(self, value):
+        if type(value) is not int:
+            raise TypeError("Setting value for SpeakerSetting.SUBWOOFER_LEVEL must be an integer type")
+
+        if value < 0 or value > 24:
+            raise ValueError(
+                "Setting value for SpeakerSetting.SUBWOOFER_LEVEL must be between 0 and 24, inclusive"
+            )
+
+        return str(value)
+
+    def __get_selected_sub_freq(self, value):
+        if type(value) is not int:
+            raise TypeError("Setting value for SpeakerSetting.SUBWOOFER_FREQUENCY must be an integer type")
+
+        if value < 0 or value > 30:
+            raise ValueError(
+                "Setting value for SpeakerSetting.SUBWOOFER_FREQUENCY must be between 0 and 30, inclusive"
+            )
+
+        return str(value)
+
+    def __get_selected_sub_phase(self, value):
+        if type(value) is not SubwooferPhase:
+            raise TypeError(
+                ("Setting value for SpeakerSetting.SUBWOOFER_PHASE must be specified as "
+                    "a SubwooferPhase enum type")
+            )
+
+        if value == SubwooferPhase.UNKNOWN:
+            raise ValueError(
+                "Setting value for SpeakerSetting.SUBWOOFER_PHASE cannot be SubwooferPhase.UNKNOWN"
+            )
+
+        valid_phases = {
+            SubwooferPhase.NORMAL: "normal",
+            SubwooferPhase.REVERSE: "reverse"
+        }
+
+        phase = valid_phases.get(value, SubwooferPhase.UNKNOWN)
+
+        if phase == SubwooferPhase.UNKNOWN:
+            raise BraviaApiError("Internal error: unsupported SubwooferPhase selected")
+
+        return phase
+
+    def __get_selected_sub_power(self, value):
+        if type(value) is not bool:
+            raise TypeError("Setting value for SpeakerSetting.SUBWOOFER_POWER must be a boolean type")
+
+        return "on" if value else "off"
