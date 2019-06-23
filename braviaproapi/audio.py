@@ -1,7 +1,6 @@
 import re
 from enum import Enum
 from .errors import HttpError, BraviaApiError
-from .util import coalesce_none_or_empty
 from pprint import pprint
 
 
@@ -11,9 +10,10 @@ class ErrorCode(object):
     ILLEGAL_STATE = 7
     TARGET_NOT_SUPPORTED = 40800
     VOLUME_OUT_OF_RANGE = 40801
+    MULTIPLE_SETTINGS_FAILED = 40004
 
 
-class AudioOutputs(Enum):
+class AudioOutput(Enum):
     UNKNOWN = 0
     SPEAKER = 1
     SPEAKER_HDMI = 2
@@ -44,7 +44,7 @@ class Audio(object):
         self.bravia_client = bravia_client
         self.http_client = http_client
 
-    def get_sound_settings(self):
+    def get_output_device(self):
         self.bravia_client.initialize()
 
         try:
@@ -67,20 +67,19 @@ class Audio(object):
         output_terminal = response[0]
 
         output_modes = {
-            "speaker": AudioOutputs.SPEAKER,
-            "speaker_hdmi": AudioOutputs.SPEAKER_HDMI,
-            "hdmi": AudioOutputs.HDMI,
-            "audioSystem": AudioOutputs.AUDIO_SYSTEM
+            "speaker": AudioOutput.SPEAKER,
+            "speaker_hdmi": AudioOutput.SPEAKER_HDMI,
+            "hdmi": AudioOutput.HDMI,
+            "audioSystem": AudioOutput.AUDIO_SYSTEM
         }
-        current_output = output_modes.get(output_terminal.get("currentValue"), AudioOutputs.UNKNOWN)
+        current_output = output_modes.get(output_terminal.get("currentValue"), AudioOutput.UNKNOWN)
 
-        if current_output == AudioOutputs.UNKNOWN:
+        if current_output == AudioOutput.UNKNOWN:
             raise BraviaApiError(
                 "API returned unexpected audio output '{0}'".format(output_terminal.get("currentValue"))
             )
 
         return {
-            "name": coalesce_none_or_empty(output_terminal.get("target")),
             "output": current_output
         }
 
@@ -265,5 +264,38 @@ class Audio(object):
                 raise BraviaApiError("The target device does not support controlling volume of the specified output.")
             if err.error_code == ErrorCode.VOLUME_OUT_OF_RANGE:
                 raise BraviaApiError("The specified volume value is out of range for the target device.")
+            else:
+                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+
+    def set_output_device(self, output_device):
+        self.bravia_client.initialize()
+
+        if type(output_device) is not AudioOutput:
+            raise TypeError("output_device must be an AudioOutput enum type")
+
+        if output_device == AudioOutput.UNKNOWN:
+            raise ValueError("output_device cannot be AudioOutput.UNKNOWN")
+
+        valid_outputs = {
+            AudioOutput.SPEAKER: "speaker",
+            AudioOutput.SPEAKER_HDMI: "speaker_hdmi",
+            AudioOutput.HDMI: "hdmi",
+            AudioOutput.AUDIO_SYSTEM: "audioSystem"
+        }
+
+        request_output = valid_outputs.get(output_device, AudioOutput.UNKNOWN)
+        if request_output == AudioOutput.UNKNOWN:
+            raise BraviaApiError("Internal error: unsupported AudioOutput selected")
+
+        try:
+            self.http_client.request(
+                endpoint="audio",
+                method="setSoundSettings",
+                params={"settings": [{"target": "outputTerminal", "value": request_output}]},
+                version="1.1"
+            )
+        except HttpError as err:
+            if err.error_code == ErrorCode.MULTIPLE_SETTINGS_FAILED:
+                raise BraviaApiError("Unable to set sound output device")
             else:
                 raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
