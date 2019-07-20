@@ -1,0 +1,7 @@
+ * Check that error handling is consistent across classes
+ * Convert all classes to use new error messages
+ * Check that usage of enums is consistent
+ * See if we can remove the initialization calls by specifying API version?
+ * Fix issue with AvContent.get_content_list()
+ * Write documentation of methods
+ * Implement documentation generator

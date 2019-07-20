@@ -6,7 +6,6 @@ from .errors import HttpError, BraviaApiError
 # Error code definitions
 class ErrorCode(object):
     ILLEGAL_ARGUMENT = 3
-    ILLEGAL_STATE = 7
     TARGET_NOT_SUPPORTED = 40800
     VOLUME_OUT_OF_RANGE = 40801
     MULTIPLE_SETTINGS_FAILED = 40004

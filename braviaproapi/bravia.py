@@ -1,4 +1,4 @@
-from . import http, system, videoscreen, encryption, appcontrol, audio, remote
+from . import http, system, videoscreen, encryption, appcontrol, audio, remote, avcontent
 from .errors import BraviaApiError
 from packaging import version
 
@@ -14,6 +14,7 @@ class Bravia(object):
         self.appcontrol = appcontrol.AppControl(bravia_client=self, http_client=self.http_client)
         self.audio = audio.Audio(bravia_client=self, http_client=self.http_client)
         self.remote = remote.Remote(bravia_client=self, http_client=self.http_client)
+        self.avcontent = avcontent.AvContent(bravia_client=self, http_client=self.http_client)
 
     def initialize(self):
         if self.initialized:
