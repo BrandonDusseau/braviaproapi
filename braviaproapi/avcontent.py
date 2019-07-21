@@ -3,15 +3,6 @@ from .errors import HttpError, BraviaApiError, ApiErrors, getErrorMessage
 from .util import coalesce_none_or_empty
 
 
-# class SourceType(Enum):
-#     UNKNOWN = 0
-#     EXT_CEC = "extInput:cec"
-#     EXT_COMPONENT = "extInput:component"
-#     EXT_COMPOSITE = "extInput:composite"
-#     EXT_HDMI = "extInput:hdmi"
-#     EXT_WIDI = "extInput:widi"
-
-
 class InputIcon(Enum):
     UNKNOWN = 0
     COMPOSITE = 1
@@ -48,7 +39,7 @@ class AvContent(object):
 
     # NOTE: the 'type' and 'target' parameters are not implemented for this call, as Sony's documentation
     #       does not thoroughly explain what they do.
-    def get_content_count(self, source):
+    def get_content_count(self, source=None):
         self.bravia_client.initialize()
 
         if type(source) is not str:
@@ -61,45 +52,57 @@ class AvContent(object):
             response = self.http_client.request(
                 endpoint="avContent",
                 method="getContentCount",
-                params={"source": source},
+                params={"source": source if source else ""},
                 version="1.1"
             )
         except HttpError as err:
-            raise BraviaApiError(getErrorMessage(err.error_code, str(err)))
+            raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
 
         if "count" not in response or type(response["count"]) is not int:
             raise BraviaApiError("API returned unexpected response format for getContentCount")
 
         return response["count"]
 
-    # NOTE: the 'stIdx' and 'cnt' parameters are not implemented for this call because they are likely
-    #       unnecessary for any use case of this library.
-    #       Perhaps this can be changed later if someone needs it.
-    # def get_content_list(self, type=None):
-    #     self.bravia_client.initialize()
-    #
-    #     if type is not None and type(type) is not SourceType:
-    #         raise TypeError("type must be a SourceType enum value or None")
-    #
-    #     if type == SourceType.UNKNOWN:
-    #          raise ValueError("type cannot be SourceType.UNKNOWN")
-    #
-    #     source_count = self.get_content_count()
-    #
-    #     try:
-    #         response = self.http_client.request(
-    #             endpoint="avContent",
-    #             method="getContentList",
-    #             params={"uri": type.value if type else None},
-    #             version="1.5"
-    #         )
-    #     except HttpError as err:
-    #         # I'm not entirely sure what this error means, but I assume it occurs when trying to
-    #         # explicitly read a storage device, so return an empty list of sources here.
-    #         if err.error_code == ApiErrors.STORAGE_DOES_NOT_EXIST:
-    #             return []
-    #         else:
-    #             raise BraviaApiError(getErrorMessage(err.error_code, str(err)))
+    def get_content_list(self, source):
+        self.bravia_client.initialize()
+
+        if type(source) is not str:
+            raise TypeError("source must be a string value")
+
+        if not source:
+            raise ValueError("source must be non-empty string representing a source URI")
+
+        count = self.get_content_count(source)
+        if count == 0:
+            return None
+
+        content = []
+
+        start = 0
+        while (start < count):
+            try:
+                response = self.http_client.request(
+                    endpoint="avContent",
+                    method="getContentList",
+                    params={"source": source, "stIdx": start, "cnt": 50},
+                    version="1.2"
+                )
+            except HttpError as err:
+                raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
+
+            if not response or type(response) is not list:
+                raise BraviaApiError("API returned unexpected response format for getContentList")
+
+            for index in response:
+                content.append({
+                    "index": index.get("index"),
+                    "name": coalesce_none_or_empty(index.get("title")),
+                    "uri": coalesce_none_or_empty(index.get("uri"))
+                })
+
+            start += 50
+
+        return content if len(content) > 0 else None
 
     def get_scheme_list(self):
         self.bravia_client.initialize()
@@ -111,7 +114,7 @@ class AvContent(object):
                 version="1.0"
             )
         except HttpError as err:
-            raise BraviaApiError(getErrorMessage(err.error_code, str(err)))
+            raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
 
         if not response or type(response) is not list:
             raise BraviaApiError("API returned unexpected response format for getSchemeList")
@@ -142,7 +145,7 @@ class AvContent(object):
                 version="1.0"
             )
         except HttpError as err:
-            raise BraviaApiError(getErrorMessage(err.error_code, str(err)))
+            raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
 
         if not response or type(response) is not list:
             raise BraviaApiError("API returned unexpected response format for getSourceList")
@@ -166,7 +169,7 @@ class AvContent(object):
                 version="1.1"
             )
         except HttpError as err:
-            raise BraviaApiError(getErrorMessage(err.error_code, str(err)))
+            raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
 
         if not response or type(response) is not list:
             raise BraviaApiError("API returned unexpected response format for getCurrentExternalInputsStatus")
@@ -225,7 +228,11 @@ class AvContent(object):
                 version="1.0"
             )
         except HttpError as err:
-            raise BraviaApiError(getErrorMessage(err.error_code, str(err)))
+            # If the display is off, there is no playing content, so return None
+            if err.error_code == ApiErrors.DISPLAY_OFF.value:
+                return None
+            else:
+                raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
 
         if not response or type(response) is not dict:
             raise BraviaApiError("API returned unexpected response format for getPlayingContentInfo")
@@ -253,7 +260,7 @@ class AvContent(object):
                 version="1.0"
             )
         except HttpError as err:
-            raise BraviaApiError(getErrorMessage(err.error_code, str(err)))
+            raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
 
         if not response or type(response) is not dict:
             raise BraviaApiError("API returned unexpected response format for getPlayingContentInfo")

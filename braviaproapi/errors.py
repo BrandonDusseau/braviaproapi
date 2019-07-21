@@ -68,7 +68,7 @@ class ApiErrors(Enum):
 
 
 error_messages = {
-    ApiErrors.UNKNOWN: "An unexpected error occurred",
+    ApiErrors.UNKNOWN: "An unexpected error occurred: {0}",
     ApiErrors.HTTP_UNAUTHORIZED: "This application is not authorized to access the device API",
     ApiErrors.HTTP_FORBIDDEN: "The requested resource is forbidden",
     ApiErrors.HTTP_NOT_FOUND: "The requested resource was not found",
@@ -76,9 +76,9 @@ error_messages = {
     ApiErrors.HTTP_URI_TOO_LONG: "The requested URI was too long",
     ApiErrors.HTTP_NOT_IMPLEMENTED: "The requested resource is not implemented",
     ApiErrors.HTTP_SERVICE_UNAVAILABLE: "The device API reports that it is not available",
-    ApiErrors.ANY: "A general error occurred",
+    ApiErrors.ANY: "A general error occurred: {0}",
     ApiErrors.TIMEOUT: "A timeout occurred on the device",
-    ApiErrors.ILLEGAL_ARGUMENT: "One or more API parameters is invalid on this device",
+    ApiErrors.ILLEGAL_ARGUMENT: "One or more API parameters is invalid",
     ApiErrors.ILLEGAL_REQUEST: "The API request is malformed, empty, or otherwise invalid",
     ApiErrors.ILLEGAL_STATE: "The device is not in the correct state to process this request",
     ApiErrors.NO_SUCH_METHOD: "The requested API resource is not available on this device",
@@ -90,7 +90,7 @@ error_messages = {
     ApiErrors.REQUEST_DUPLICATED: "The previous request is still processing",
     ApiErrors.MULTIPLE_SETTINGS_FAILED: "One or more settings could not be applied (but some may have been)",
     ApiErrors.DISPLAY_OFF: "This request cannot be made while the device's display is off",
-    ApiErrors.CONTACT_SUPPORT: "A general error occurred with message",
+    ApiErrors.CONTACT_SUPPORT: "A general error occurred with message: {0}",
     ApiErrors.PASSWORD_EXPIRED: "The password has expired",
     ApiErrors.AC_POWER_REQUIRED: "The request cannot be processed because the device needs to be connected to AC power",
     ApiErrors.SCREEN_CHANGE_IN_PROGRESS: "The device is currently changing the screen",
@@ -129,10 +129,11 @@ def getErrorMessage(error_code, additional_message=None):
     else:
         known_error_code = ApiErrors.UNKNOWN
 
-    if additional_message is None:
-        return error_messages.get(known_error_code)
-    else:
-        return "{0}: {1}".format(error_messages.get(known_error_code), additional_message)
+    message = error_messages.get(known_error_code)
+    if message is None:
+        message = error_messages.get(ApiErrors.UNKNOWN)
+
+    return message.format(additional_message)
 
 
 class BraviaApiError(Exception):
