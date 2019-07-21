@@ -56,7 +56,11 @@ class AvContent(object):
                 version="1.1"
             )
         except HttpError as err:
-            raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
+            # Illegal argument likely implies a source type that does not exist, so return 0
+            if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
+                return 0
+            else:
+                raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
 
         if "count" not in response or type(response["count"]) is not int:
             raise BraviaApiError("API returned unexpected response format for getContentCount")
@@ -88,7 +92,11 @@ class AvContent(object):
                     version="1.2"
                 )
             except HttpError as err:
-                raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
+                # Illegal argument likely implies a source type that does not exist, so return None
+                if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
+                    return None
+                else:
+                    raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
 
             if not response or type(response) is not list:
                 raise BraviaApiError("API returned unexpected response format for getContentList")
@@ -145,7 +153,11 @@ class AvContent(object):
                 version="1.0"
             )
         except HttpError as err:
-            raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
+            # Illegal argument likely implies a source type that does not exist, so return None
+            if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
+                return None
+            else:
+                raise BraviaApiError(getErrorMessage(err.error_code, str(err))) from None
 
         if not response or type(response) is not list:
             raise BraviaApiError("API returned unexpected response format for getSourceList")
