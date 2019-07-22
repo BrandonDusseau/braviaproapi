@@ -1,14 +1,7 @@
 from enum import Enum
 from dateutil import parser as date_parser
-from .errors import HttpError, BraviaApiError
+from .errors import HttpError, BraviaApiError, BraviaInternalError, ApiErrors, get_error_message
 from .util import coalesce_none_or_empty
-
-
-# Error code definitions
-class ErrorCode(object):
-    ILLEGAL_ARGUMENT = 3
-    ERR_CLOCK_NOT_SET = 7
-    ILLEGAL_STATE = 7
 
 
 # Possible LED modes returned by API
@@ -50,17 +43,23 @@ class System(object):
         if type(power_state) is not bool:
             raise TypeError("power_state must be a boolean type")
 
-        self.http_client.request(
-            endpoint="system",
-            method="setPowerStatus",
-            params={"status": power_state},
-            version="1.0"
-        )
+        try:
+            self.http_client.request(
+                endpoint="system",
+                method="setPowerStatus",
+                params={"status": power_state},
+                version="1.0"
+            )
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def get_power_status(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(endpoint="system", method="getPowerStatus", version="1.0")
+        try:
+            response = self.http_client.request(endpoint="system", method="getPowerStatus", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if response["status"] == "standby":
             return False
@@ -79,13 +78,19 @@ class System(object):
             return date
 
         except HttpError as err:
-            if (err.error_code == ErrorCode.ERR_CLOCK_NOT_SET):
+            # Illegal state indicates that the system clock is not set, so there is no time to return.
+            if (err.error_code == ApiErrors.ILLEGAL_STATE.value):
                 return None
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def get_interface_information(self):
-        response = self.http_client.request(endpoint="system", method="getInterfaceInformation", version="1.0")
+        self.bravia_client.initialize()
+
+        try:
+            response = self.http_client.request(endpoint="system", method="getInterfaceInformation", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         interface_info = {
             "product_category": coalesce_none_or_empty(response.get("productCategory")),
@@ -100,7 +105,10 @@ class System(object):
     def get_led_status(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(endpoint="system", method="getLEDIndicatorStatus", version="1.0")
+        try:
+            response = self.http_client.request(endpoint="system", method="getLEDIndicatorStatus", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         # API may return None for LED status if it is unknown
         led_status = None
@@ -146,10 +154,10 @@ class System(object):
             )
         except HttpError as err:
             # An illegal argument error indicates the requested interface does not exist. Gracefully handle this.
-            if err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
+            if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
                 return None
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if type(response) is not list:
             raise BraviaApiError("API returned unexpected response format for getNetworkSettings")
@@ -176,7 +184,10 @@ class System(object):
     def get_power_saving_mode(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(endpoint="system", method="getPowerSavingMode", version="1.0")
+        try:
+            response = self.http_client.request(endpoint="system", method="getPowerSavingMode", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         saving_mode = None
         if "mode" in response:
@@ -198,7 +209,10 @@ class System(object):
     def get_remote_control_info(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(endpoint="system", method="getRemoteControllerInfo", version="1.0")
+        try:
+            response = self.http_client.request(endpoint="system", method="getRemoteControllerInfo", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if len(response) != 2:
             raise BraviaApiError("API returned unexpected format for remote control information.")
@@ -213,12 +227,15 @@ class System(object):
     def get_remote_access_status(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(
-            endpoint="system",
-            method="getRemoteDeviceSettings",
-            params={"target": "accessPermission"},
-            version="1.0"
-        )
+        try:
+            response = self.http_client.request(
+                endpoint="system",
+                method="getRemoteDeviceSettings",
+                params={"target": "accessPermission"},
+                version="1.0"
+            )
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if len(response) != 1:
             raise BraviaApiError("API returned unexpected getRemoteDeviceSettings response format")
@@ -236,7 +253,10 @@ class System(object):
     def get_system_information(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(endpoint="system", method="getSystemInformation", version="1.0")
+        try:
+            response = self.http_client.request(endpoint="system", method="getSystemInformation", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         sys_info = {
             "product": coalesce_none_or_empty(response.get("product")),
@@ -253,7 +273,10 @@ class System(object):
     def get_wake_on_lan_information(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(endpoint="system", method="getSystemSupportedFunction", version="1.0")
+        try:
+            response = self.http_client.request(endpoint="system", method="getSystemSupportedFunction", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if len(response) != 1:
             raise BraviaApiError("API returned unexpected getSystemSupportedFunction response format")
@@ -269,7 +292,10 @@ class System(object):
     def get_wake_on_lan_status(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(endpoint="system", method="getWolMode", version="1.0")
+        try:
+            response = self.http_client.request(endpoint="system", method="getWolMode", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         enabled = response.get("enabled")
         if enabled is None or type(enabled) is not bool:
@@ -279,7 +305,11 @@ class System(object):
 
     def request_reboot(self):
         self.bravia_client.initialize()
-        self.http_client.request(endpoint="system", method="requestReboot", version="1.0")
+
+        try:
+            self.http_client.request(endpoint="system", method="requestReboot", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_led_status(self, mode, enabled=None):
         self.bravia_client.initialize()
@@ -303,7 +333,7 @@ class System(object):
         sent_mode = modes.get(mode, LedMode.UNKNOWN)
 
         if sent_mode == LedMode.UNKNOWN:
-            raise BraviaApiError("Internal error: unsupported LedMode selected")
+            raise BraviaInternalError("Internal error: unsupported LedMode selected")
 
         params = {
             "mode": sent_mode
@@ -316,10 +346,10 @@ class System(object):
         try:
             self.http_client.request(endpoint="system", method="setLEDIndicatorStatus", params=params, version="1.1")
         except HttpError as err:
-            if err.error_code == ErrorCode.ILLEGAL_STATE or err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
+            if err.error_code == ApiErrors.ILLEGAL_STATE.value or err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
                 raise BraviaApiError("The target device does not support setting LED status.")
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_language(self, language):
         self.bravia_client.initialize()
@@ -335,10 +365,10 @@ class System(object):
                 version="1.0"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
-                raise BraviaApiError("The target device does not support the selected language.")
+            if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
+                raise BraviaApiError("The target device does not support the specified language.")
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_power_saving_mode(self, mode):
         self.bravia_client.initialize()
@@ -358,14 +388,17 @@ class System(object):
         sent_mode = modes.get(mode, PowerSavingMode.UNKNOWN)
 
         if sent_mode == PowerSavingMode.UNKNOWN:
-            raise BraviaApiError("Internal error: unsupported PowerSavingMode selected")
+            raise BraviaInternalError("Internal error: unsupported PowerSavingMode selected")
 
-        self.http_client.request(
-            endpoint="system",
-            method="setPowerSavingMode",
-            params={"mode": sent_mode},
-            version="1.0"
-        )
+        try:
+            self.http_client.request(
+                endpoint="system",
+                method="setPowerSavingMode",
+                params={"mode": sent_mode},
+                version="1.0"
+            )
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_wake_on_lan_status(self, enabled):
         self.bravia_client.initialize()
@@ -373,9 +406,12 @@ class System(object):
         if type(enabled) is not bool:
             raise TypeError("enabled must be a boolean value")
 
-        self.http_client.request(
-            endpoint="system",
-            method="setWolMode",
-            params={"enabled": enabled},
-            version="1.0"
-        )
+        try:
+            self.http_client.request(
+                endpoint="system",
+                method="setWolMode",
+                params={"enabled": enabled},
+                version="1.0"
+            )
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None

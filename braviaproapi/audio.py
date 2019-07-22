@@ -1,14 +1,7 @@
 import re
 from enum import Enum
-from .errors import HttpError, BraviaApiError
-
-
-# Error code definitions
-class ErrorCode(object):
-    ILLEGAL_ARGUMENT = 3
-    TARGET_NOT_SUPPORTED = 40800
-    VOLUME_OUT_OF_RANGE = 40801
-    MULTIPLE_SETTINGS_FAILED = 40004
+from .errors import HttpError, BraviaApiError, BraviaInternalError, ApiErrors, get_error_message, \
+    BraviaTargetNotSupportedError, BraviaVolumeOutOfRangeError
 
 
 class AudioOutput(Enum):
@@ -62,11 +55,11 @@ class Audio(object):
                 version="1.1"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
+            if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
                 # The requested target does not exist, but that's not necessarily a fatal error
                 return None
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if type(response) is not list or len(response) > 1:
             raise BraviaApiError("API returned unexpected response format for getSoundSettings")
@@ -93,12 +86,15 @@ class Audio(object):
     def get_speaker_settings(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(
-            endpoint="audio",
-            method="getSpeakerSettings",
-            params={"target": ""},
-            version="1.0"
-        )
+        try:
+            response = self.http_client.request(
+                endpoint="audio",
+                method="getSpeakerSettings",
+                params={"target": ""},
+                version="1.0"
+            )
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if type(response) is not list:
             raise BraviaApiError("API returned unexpected response format for getSoundSettings.")
@@ -158,7 +154,10 @@ class Audio(object):
     def get_volume_information(self):
         self.bravia_client.initialize()
 
-        response = self.http_client.request(endpoint="audio", method="getVolumeInformation", version="1.0")
+        try:
+            response = self.http_client.request(endpoint="audio", method="getVolumeInformation", version="1.0")
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if type(response) is not list:
             raise BraviaApiError("API returned unexpected response format for getVolumeInformation.")
@@ -199,12 +198,15 @@ class Audio(object):
         if type(mute) is not bool:
             raise TypeError("mute must be a boolean value")
 
-        self.http_client.request(
-            endpoint="audio",
-            method="setAudioMute",
-            params={"status": mute},
-            version="1.0"
-        )
+        try:
+            self.http_client.request(
+                endpoint="audio",
+                method="setAudioMute",
+                params={"status": mute},
+                version="1.0"
+            )
+        except HttpError as err:
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_volume_level(self, volume, show_ui=True, device=None):
         if type(volume) is not int:
@@ -252,7 +254,7 @@ class Audio(object):
             }
             target = valid_requested_devices.get(device)
             if target is None:
-                raise BraviaApiError("Internal error: Invalid VolumeDevice specified")
+                raise BraviaInternalError("Internal error: Invalid VolumeDevice specified")
 
         try:
             self.http_client.request(
@@ -266,12 +268,14 @@ class Audio(object):
                 version="1.2"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.TARGET_NOT_SUPPORTED:
-                raise BraviaApiError("The target device does not support controlling volume of the specified output.")
-            if err.error_code == ErrorCode.VOLUME_OUT_OF_RANGE:
-                raise BraviaApiError("The specified volume value is out of range for the target device.")
+            if err.error_code == ApiErrors.TARGET_NOT_SUPPORTED.value:
+                raise BraviaTargetNotSupportedError(
+                    "The target device does not support controlling volume of the specified output."
+                )
+            if err.error_code == ApiErrors.VOLUME_OUT_OF_RANGE.value:
+                raise BraviaVolumeOutOfRangeError("The specified volume value is out of range for the target device.")
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_output_device(self, output_device):
         self.bravia_client.initialize()
@@ -291,7 +295,7 @@ class Audio(object):
 
         request_output = valid_outputs.get(output_device, AudioOutput.UNKNOWN)
         if request_output == AudioOutput.UNKNOWN:
-            raise BraviaApiError("Internal error: unsupported AudioOutput selected")
+            raise BraviaInternalError("Internal error: unsupported AudioOutput selected")
 
         try:
             self.http_client.request(
@@ -301,10 +305,10 @@ class Audio(object):
                 version="1.1"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.MULTIPLE_SETTINGS_FAILED:
+            if err.error_code == ApiErrors.MULTIPLE_SETTINGS_FAILED.value:
                 raise BraviaApiError("Unable to set sound output device")
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_speaker_settings(self, settings):
         self.bravia_client.initialize()
@@ -359,10 +363,7 @@ class Audio(object):
                 version="1.0"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.MULTIPLE_SETTINGS_FAILED:
-                raise BraviaApiError("One or more settings failed to apply, but some may have been successful.")
-            else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def __get_selected_tv_position(self, value):
         if type(value) is not TvPosition:
@@ -381,7 +382,7 @@ class Audio(object):
         position = valid_positions.get(value, TvPosition.UNKNOWN)
 
         if position == TvPosition.UNKNOWN:
-            raise BraviaApiError("Internal error: unsupported TvPosition selected")
+            raise BraviaInternalError("Internal error: unsupported TvPosition selected")
 
         return position
 
@@ -427,7 +428,7 @@ class Audio(object):
         phase = valid_phases.get(value, SubwooferPhase.UNKNOWN)
 
         if phase == SubwooferPhase.UNKNOWN:
-            raise BraviaApiError("Internal error: unsupported SubwooferPhase selected")
+            raise BraviaInternalError("Internal error: unsupported SubwooferPhase selected")
 
         return phase
 

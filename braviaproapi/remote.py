@@ -1,5 +1,5 @@
 from enum import Enum
-from .errors import HttpError, BraviaApiError
+from .errors import HttpError, BraviaApiError, get_error_message
 
 
 # These are some defaults specified by Sony
@@ -70,4 +70,4 @@ class Remote(object):
         try:
             self.http_client.remote_request(button_code)
         except HttpError as err:
-            raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None

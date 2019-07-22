@@ -1,13 +1,9 @@
-from .errors import HttpError, BraviaApiError
+from .errors import HttpError, BraviaApiError, ApiErrors, get_error_message
 from base64 import b64encode, b64decode
 from Crypto.Cipher import AES, PKCS1_v1_5
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
-
-
-class ErrorCode(object):
-    ERR_KEY_DOES_NOT_EXIST = 42400
 
 
 class Encryption(object):
@@ -28,10 +24,10 @@ class Encryption(object):
             )
         except HttpError as err:
             # If we do not have a public key, return None
-            if err.error_code == ErrorCode.ERR_KEY_DOES_NOT_EXIST:
+            if err.error_code == ApiErrors.KEY_DOES_NOT_EXIST.value:
                 return None
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if "publicKey" not in response:
             raise BraviaApiError("API returned unexpected response format for getPublicKey")

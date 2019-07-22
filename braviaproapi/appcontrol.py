@@ -1,19 +1,7 @@
 from enum import Enum
 from .errors import HttpError, BraviaApiError, BraviaAppLaunchAlreadyInProgressError, \
-    BraviaAppLaunchError, BraviaNoFocusedTextFieldError
+    BraviaInternalError, BraviaAppLaunchError, BraviaNoFocusedTextFieldError, ApiErrors, get_error_message
 from .util import coalesce_none_or_empty
-
-
-# Error code definitions
-class ErrorCode(object):
-    ILLEGAL_ARGUMENT = 3
-    ILLEGAL_STATE = 7
-    ENCRYPTION_ERROR = 40002
-    CLIENT_MUST_WAIT = 40003
-    APP_REQUEST_ALREADY_PROCESSING = 41400
-    APP_FAILED_TO_LAUNCH = 41401
-    APP_LAUNCH_IN_PROGRESS = 41402
-    APP_FAILED_TO_TERMINATE = 41403
 
 
 class AppFeature(Enum):
@@ -106,12 +94,12 @@ class AppControl(object):
                 version="1.1"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.CLIENT_MUST_WAIT or err.error_code == ErrorCode.ILLEGAL_STATE:
+            if err.error_code == ApiErrors.CLIENT_MUST_WAIT.value or err.error_code == ApiErrors.ILLEGAL_STATE.value:
                 return None
-            elif err.error_code == ErrorCode.ENCRYPTION_ERROR:
-                raise BraviaApiError("Internal error: The target device rejected our encryption key")
+            elif err.error_code == ApiErrors.ENCRYPTION_ERROR.value:
+                raise BraviaInternalError("Internal error: The target device rejected our encryption key")
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         if "text" not in response:
             raise BraviaApiError("API returned unexpected response format for getTextForm")
@@ -126,10 +114,7 @@ class AppControl(object):
         try:
             response = self.http_client.request(endpoint="appControl", method="getWebAppStatus", version="1.0")
         except HttpError as err:
-            if err.error_code == ErrorCode.ILLEGAL_STATE:
-                raise BraviaApiError("The target device must be powered on to get web app status")
-            else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
         return {
             "active": True if response.get("active") == "true" else False,
@@ -150,17 +135,17 @@ class AppControl(object):
                 version="1.0"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.APP_REQUEST_ALREADY_PROCESSING:
-                raise BraviaAppLaunchAlreadyInProgressError(
+            if err.error_code == ApiErrors.ANOTHER_REQUEST_IN_PROGRESS.value:
+                raise BraviaAppLaunchError(
                     "Another app is currently in the process of launching"
                 )
-            elif err.error_code == ErrorCode.APP_FAILED_TO_LAUNCH:
+            elif err.error_code == ApiErrors.FAILED_TO_LAUNCH.value:
                 raise BraviaAppLaunchError("The app failed to launch")
-            elif err.error_code == ErrorCode.APP_LAUNCH_IN_PROGRESS:
+            elif err.error_code == ApiErrors.REQUEST_IN_PROGRESS.value:
                 # This is actually a success message, so ignore it
                 pass
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_text_form(self, text):
         self.bravia_client.initialize()
@@ -185,14 +170,14 @@ class AppControl(object):
                 version="1.1"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.ILLEGAL_STATE:
+            if err.error_code == ApiErrors.ILLEGAL_STATE.value:
                 raise BraviaNoFocusedTextFieldError(
                     "The target device does not currently have a writable text field focused."
                 )
-            elif err.error_code == ErrorCode.ENCRYPTION_ERROR:
-                raise BraviaApiError("Internal error: The target device rejected our encryption key")
+            elif err.error_code == ApiErrors.ENCRYPTION_FAILED.value:
+                raise BraviaInternalError("Internal error: The target device rejected our encryption key")
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
 
     def terminate_all_apps(self):
         self.bravia_client.initialize()
@@ -200,8 +185,8 @@ class AppControl(object):
         try:
             self.http_client.request(endpoint="appControl", method="terminateApps", version="1.0")
         except HttpError as err:
-            if err.error_code == ErrorCode.APP_FAILED_TO_TERMINATE:
+            if err.error_code == ApiErrors.FAILED_TO_TERMINATE.value:
                 # Some apps may not be allowed to be terminated. This is an expected response in that case.
                 pass
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None

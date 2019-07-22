@@ -1,10 +1,6 @@
 from enum import Enum
-from .errors import HttpError, BraviaApiError
-
-
-class ErrorCode(object):
-    ILLEGAL_ARGUMENT = 3
-    ILLEGAL_STATE = 7
+from .errors import HttpError, BraviaApiError, BraviaInternalError, BraviaInvalidStateError, ApiErrors, \
+    get_error_message
 
 
 class SceneMode(Enum):
@@ -36,7 +32,7 @@ class VideoScreen(object):
         sent_mode = modes.get(setting, SceneMode.UNKNOWN)
 
         if sent_mode == SceneMode.UNKNOWN:
-            raise ValueError("Internal error: Unsupported SceneMode selected")
+            raise BraviaInternalError("Internal error: Unsupported SceneMode selected")
 
         try:
             self.http_client.request(
@@ -46,12 +42,12 @@ class VideoScreen(object):
                 version="1.0"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.ILLEGAL_ARGUMENT:
-                raise BraviaApiError("Internal error: an invalid argument was sent to the API")
-            elif err.error_code == ErrorCode.ILLEGAL_STATE:
-                raise BraviaApiError(
+            if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
+                raise BraviaInternalError("Internal error: an invalid argument was sent to the API")
+            elif err.error_code == ApiErrors.ILLEGAL_STATE.value:
+                raise BraviaInvalidStateError(
                     ("Either the target device is powered off or it does not support the selected SceneMode for the"
-                        " current input")
+                     + " current input")
                 )
             else:
-                raise BraviaApiError("An unexpected error occurred: {0}".format(str(err)))
+                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None

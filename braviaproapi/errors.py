@@ -120,7 +120,7 @@ error_messages = {
 }
 
 
-def getErrorMessage(error_code, additional_message=None):
+def get_error_message(error_code, additional_message=None):
     if error_code is not None:
         try:
             known_error_code = ApiErrors(error_code)
@@ -146,13 +146,24 @@ class HttpError(Exception):
         pass
 
 
-class BraviaAppLaunchAlreadyInProgressError(Exception):
+class BraviaTargetNotSupportedError(BraviaApiError):
     pass
 
 
-class BraviaAppLaunchError(Exception):
+class BraviaVolumeOutOfRangeError(BraviaApiError):
     pass
 
 
-class BraviaNoFocusedTextFieldError(Exception):
+class BraviaAppLaunchError(BraviaApiError):
+    pass
+
+
+class BraviaNoFocusedTextFieldError(BraviaApiError):
+    pass
+
+
+class BraviaInternalError(Exception):
+    pass
+
+class BraviaInvalidStateError(BraviaApiError):
     pass
