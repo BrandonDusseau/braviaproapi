@@ -46,7 +46,7 @@ class VideoScreen(object):
             elif err.error_code == ErrorCode.ILLEGAL_STATE.value:
                 raise InvalidStateError(
                     ("Either the target device is powered off or it does not support the selected SceneMode for the"
-                     + " current input")
+                        " current input")
                 )
             else:
                 raise ApiError(get_error_message(err.error_code, str(err))) from None

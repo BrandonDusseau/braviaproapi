@@ -85,7 +85,7 @@ class System(object):
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def get_interface_information(self):
-        self.bravia_client.initialize()
+        # Do not initialize this method, as it is used to determine API version during initialization
 
         try:
             response = self.http_client.request(endpoint="system", method="getInterfaceInformation", version="1.0")
