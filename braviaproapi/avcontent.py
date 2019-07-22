@@ -1,5 +1,5 @@
 from enum import Enum
-from .errors import HttpError, BraviaApiError, ApiErrors, get_error_message
+from .errors import HttpError, ApiError, ErrorCode, get_error_message
 from .util import coalesce_none_or_empty
 
 
@@ -56,13 +56,13 @@ class AvContent(object):
             )
         except HttpError as err:
             # Illegal argument likely implies a source type that does not exist, so return 0
-            if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
+            if err.error_code == ErrorCode.ILLEGAL_ARGUMENT.value:
                 return 0
             else:
-                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
+                raise ApiError(get_error_message(err.error_code, str(err))) from None
 
         if "count" not in response or type(response["count"]) is not int:
-            raise BraviaApiError("API returned unexpected response format for getContentCount")
+            raise ApiError("API returned unexpected response format for getContentCount")
 
         return response["count"]
 
@@ -92,13 +92,13 @@ class AvContent(object):
                 )
             except HttpError as err:
                 # Illegal argument likely implies a source type that does not exist, so return None
-                if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
+                if err.error_code == ErrorCode.ILLEGAL_ARGUMENT.value:
                     return None
                 else:
-                    raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
+                    raise ApiError(get_error_message(err.error_code, str(err))) from None
 
             if not response or type(response) is not list:
-                raise BraviaApiError("API returned unexpected response format for getContentList")
+                raise ApiError("API returned unexpected response format for getContentList")
 
             for index in response:
                 content.append({
@@ -121,10 +121,10 @@ class AvContent(object):
                 version="1.0"
             )
         except HttpError as err:
-            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
+            raise ApiError(get_error_message(err.error_code, str(err))) from None
 
         if not response or type(response) is not list:
-            raise BraviaApiError("API returned unexpected response format for getSchemeList")
+            raise ApiError("API returned unexpected response format for getSchemeList")
 
         schemes = []
         for scheme_entry in response:
@@ -153,13 +153,13 @@ class AvContent(object):
             )
         except HttpError as err:
             # Illegal argument likely implies a source type that does not exist, so return None
-            if err.error_code == ApiErrors.ILLEGAL_ARGUMENT.value:
+            if err.error_code == ErrorCode.ILLEGAL_ARGUMENT.value:
                 return None
             else:
-                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
+                raise ApiError(get_error_message(err.error_code, str(err))) from None
 
         if not response or type(response) is not list:
-            raise BraviaApiError("API returned unexpected response format for getSourceList")
+            raise ApiError("API returned unexpected response format for getSourceList")
 
         sources = []
         for source_entry in response:
@@ -180,10 +180,10 @@ class AvContent(object):
                 version="1.1"
             )
         except HttpError as err:
-            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
+            raise ApiError(get_error_message(err.error_code, str(err))) from None
 
         if not response or type(response) is not list:
-            raise BraviaApiError("API returned unexpected response format for getCurrentExternalInputsStatus")
+            raise ApiError("API returned unexpected response format for getCurrentExternalInputsStatus")
 
         valid_icons = {
             "meta:composite": InputIcon.COMPOSITE,
@@ -240,13 +240,13 @@ class AvContent(object):
             )
         except HttpError as err:
             # If the display is off, there is no playing content, so return None
-            if err.error_code == ApiErrors.DISPLAY_OFF.value:
+            if err.error_code == ErrorCode.DISPLAY_OFF.value:
                 return None
             else:
-                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
+                raise ApiError(get_error_message(err.error_code, str(err))) from None
 
         if not response or type(response) is not dict:
-            raise BraviaApiError("API returned unexpected response format for getPlayingContentInfo")
+            raise ApiError("API returned unexpected response format for getPlayingContentInfo")
 
         return {
             "uri": coalesce_none_or_empty(response.get("uri")),
@@ -271,7 +271,7 @@ class AvContent(object):
                 version="1.0"
             )
         except HttpError as err:
-            raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
+            raise ApiError(get_error_message(err.error_code, str(err))) from None
 
         if not response or type(response) is not dict:
-            raise BraviaApiError("API returned unexpected response format for getPlayingContentInfo")
+            raise ApiError("API returned unexpected response format for getPlayingContentInfo")

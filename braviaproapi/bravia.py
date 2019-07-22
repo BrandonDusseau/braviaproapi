@@ -1,5 +1,5 @@
 from . import http, system, videoscreen, encryption, appcontrol, audio, remote, avcontent
-from .errors import BraviaApiError
+from .errors import ApiError
 from packaging import version
 
 
@@ -24,13 +24,13 @@ class Bravia(object):
         try:
             interface_info = self.system.get_interface_information()
         except http.HttpError as err:
-            raise BraviaApiError(
+            raise ApiError(
                 "Unable to verify API version compatibility due to an API error: {0}".format(str(err))
             ) from None
 
         api_version = interface_info["interface_version"]
         if api_version is None:
-            raise BraviaApiError(
+            raise ApiError(
                 "Unable to verify API version compatibility because the device did not indicate its API version."
             )
 
@@ -38,6 +38,6 @@ class Bravia(object):
             version.parse(api_version) >= version.parse("4.0.0")
             or version.parse(api_version) < version.parse("3.0.0")
         ):
-            raise BraviaApiError("The target device is running an incompatible API version '{0}'".format(api_version))
+            raise ApiError("The target device is running an incompatible API version '{0}'".format(api_version))
 
         self.initialized = True

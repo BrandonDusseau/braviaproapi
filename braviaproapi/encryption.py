@@ -1,4 +1,4 @@
-from .errors import HttpError, BraviaApiError, ApiErrors, get_error_message
+from .errors import HttpError, ApiError, ErrorCode, get_error_message
 from base64 import b64encode, b64decode
 from Crypto.Cipher import AES, PKCS1_v1_5
 from Crypto.PublicKey import RSA
@@ -24,20 +24,20 @@ class Encryption(object):
             )
         except HttpError as err:
             # If we do not have a public key, return None
-            if err.error_code == ApiErrors.KEY_DOES_NOT_EXIST.value:
+            if err.error_code == ErrorCode.KEY_DOES_NOT_EXIST.value:
                 return None
             else:
-                raise BraviaApiError(get_error_message(err.error_code, str(err))) from None
+                raise ApiError(get_error_message(err.error_code, str(err))) from None
 
         if "publicKey" not in response:
-            raise BraviaApiError("API returned unexpected response format for getPublicKey")
+            raise ApiError("API returned unexpected response format for getPublicKey")
 
         return response["publicKey"]
 
     def get_rsa_encrypted_common_key(self):
         try:
             pubkey_base64 = self.get_public_key()
-        except [BraviaApiError, HttpError]:
+        except [ApiError, HttpError]:
             return None
 
         if pubkey_base64 is None:
