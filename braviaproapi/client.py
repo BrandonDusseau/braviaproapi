@@ -1,5 +1,5 @@
-from . import http, system, videoscreen, encryption, appcontrol, audio, remote, avcontent
-from .errors import ApiError
+from .bravia import http, system, videoscreen, encryption, appcontrol, audio, remote, avcontent
+from .bravia.errors import ApiError
 from packaging import version
 
 
@@ -7,6 +7,12 @@ class Bravia(object):
     initialized = False
 
     def __init__(self, host, passcode):
+        '''
+        Creates an instance of the Bravia API client.
+
+        :param host: The IP address or domain name belonging to the target device
+        :param passcode: The pre-shared key configured on the target device
+        '''
         self.http_client = http.Http(host=host, psk=passcode)
         self.encryption = encryption.Encryption(bravia_client=self, http_client=self.http_client)
         self.system = system.System(bravia_client=self, http_client=self.http_client)
@@ -17,6 +23,11 @@ class Bravia(object):
         self.avcontent = avcontent.AvContent(bravia_client=self, http_client=self.http_client)
 
     def initialize(self):
+        '''
+        Initializes the API client by verifying connectivity and compatibility with the target device.
+
+        :raises: ApiError
+        '''
         if self.initialized:
             return
 
