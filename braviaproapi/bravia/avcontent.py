@@ -32,13 +32,38 @@ class InputIcon(Enum):
 
 
 class AvContent(object):
+    '''
+    Provides functionality for controlling what is played on the target device.
+
+    Args:
+        bravia_client: The parent Bravia instance
+        http_client: The HTTP client instance associated with the parent
+    '''
+
     def __init__(self, bravia_client, http_client):
         self.bravia_client = bravia_client
         self.http_client = http_client
 
     # NOTE: the 'type' and 'target' parameters are not implemented for this call, as Sony's documentation
     #       does not thoroughly explain what they do.
-    def get_content_count(self, source=None):
+    def get_content_count(self, source):
+        '''
+        Returns a count of the number of available contents for a given source.
+
+        Args:
+            - source (str): The URI of the source to enumerate. See\
+                            https://pro-bravia.sony.net/develop/integrate/rest-api/spec/resource-uri-list/index.html\
+                            for more information.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+
+        Returns:
+            An integer representing the count of available content.
+        '''
+
         self.bravia_client.initialize()
 
         if type(source) is not str:
@@ -64,9 +89,28 @@ class AvContent(object):
         if "count" not in response or type(response["count"]) is not int:
             raise ApiError("API returned unexpected response format for getContentCount")
 
-        return response["count"]
+        return int(response["count"])
 
     def get_content_list(self, source):
+        '''
+        Returns a list of available content for a given source.
+
+        Args:
+            - source (str): The URI of the source to enumerate. See\
+                            https://pro-bravia.sony.net/develop/integrate/rest-api/spec/resource-uri-list/index.html\
+                            for more information.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A list of objects containing the following keys. If no content is available, returns None.
+            - `index`: The position of the content in the list.
+            - `name`: The title of the content.
+            - `uri`: The URI at which the content can be accessed.
+        '''
         self.bravia_client.initialize()
 
         if type(source) is not str:
@@ -112,6 +156,15 @@ class AvContent(object):
         return content if len(content) > 0 else None
 
     def get_scheme_list(self):
+        '''
+        Returns a list of available content schemes the target device supports.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A list of string names of available schemes.
+        '''
         self.bravia_client.initialize()
 
         try:
@@ -136,6 +189,21 @@ class AvContent(object):
         return schemes
 
     def get_source_list(self, scheme):
+        '''
+        Returns a list of available source types for a given content scheme.
+
+        Args:
+            scheme (str): The scheme for which to get sources (retrieve this from `get_scheme_list`).
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A list of string source URIs for the specified scheme.
+        '''
+
         self.bravia_client.initialize()
 
         if type(scheme) is not str:
@@ -171,6 +239,22 @@ class AvContent(object):
         return sources
 
     def get_external_input_status(self):
+        '''
+        Returns information about the target device's external inputs.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A list of objects with the following keys:
+            - `uri`: str or None; The URI at which the input can be accessed, if applicable.
+            - `name`: str or None; The default title of the input, if applicable.
+            - `connected`: bool; Whether the input is currently connected.
+            - `custom_label`: str or None; The user-entered title of the input, if set.
+            - `icon`: InputIcon; The icon for the input. If no appropriate icon is available, this is InputIcon.UNKNOWN.
+            - `has_signal`: bool: Whether the input is currently sending a signal to the target device.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -230,6 +314,19 @@ class AvContent(object):
         return inputs
 
     def get_playing_content_info(self):
+        '''
+        Returns information about the currently playing content on the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A dict containing the following keys. If no content is playing, returns None.
+            - `uri`: str or None; The URI at which the content can be accessed, if applicable.
+            - `source`: str or None; The source that the content resides within, if applicable.
+            - `name`: str or None; The title of the playing content, if applicable.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -239,8 +336,8 @@ class AvContent(object):
                 version="1.0"
             )
         except HttpError as err:
-            # If the display is off, there is no playing content, so return None
-            if err.error_code == ErrorCode.DISPLAY_OFF.value:
+            # The device can't return information for some types of content, or when the display is off.
+            if err.error_code == ErrorCode.DISPLAY_OFF.value or err.error_core == ErrorCode.ILLEGAL_STATE.value:
                 return None
             else:
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
@@ -255,6 +352,18 @@ class AvContent(object):
         }
 
     def set_play_content(self, uri):
+        '''
+        Activates the specified content on the target device.
+
+        Args:
+            uri (str): The URI at which the content can be accessed.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+        '''
+
         self.bravia_client.initialize()
 
         if type(uri) is not str:

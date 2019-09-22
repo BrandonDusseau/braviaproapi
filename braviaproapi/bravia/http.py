@@ -4,6 +4,13 @@ from .errors import HttpError
 
 
 class Http(object):
+    '''
+    Handles HTTP messaging to the API server.
+
+    Args:
+        host (str): The HTTP hostname at which the server is running.
+        psk (str); The pre-shared key configured on the server.
+    '''
     request_id = 0
 
     def __init__(self, host, psk):
@@ -11,6 +18,24 @@ class Http(object):
         self.psk = psk
 
     def request(self, endpoint, method, params=None, version="1.0"):
+        '''
+        Sends a JSON-RPC request to the API server.
+
+        Args:
+            endpoint (str): The API endpoint to send to.
+            method (str): The RPC method to execute.
+            params (dict): Default None; Parameters to send on the request.
+            version (str): Default "1.0"; The version of the API endpoint to request.
+
+        Raises:
+            HttpError: The HTTP call failed. Refer to the `error_code` property for details.
+
+        Returns:
+            The Sony API returns a list of results. If only one result is returned (the majority of the time),
+            this method extracts it and returns it alone. If more than one result is returned, this method returns
+            the full list. If no results were found, this method returns None.
+        '''
+
         self.request_id += 1
 
         url = "http://{0}/sony/{1}".format(self.host, endpoint)
@@ -69,6 +94,16 @@ class Http(object):
             return response["result"][0]
 
     def remote_request(self, remote_code):
+        '''
+        Sends an HTTP request to the Sony API to execute an IRCC remote code.
+
+        Args:
+            remote_code (str): The IRCC code to send.
+
+        Raises:
+            HttpError: The HTTP call failed. Refer to the `error_code` property for details.
+        '''
+
         url = "http://{0}/sony/ircc".format(self.host)
         headers = {
             "X-Auth-PSK": self.psk,

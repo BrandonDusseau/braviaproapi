@@ -121,6 +121,17 @@ error_messages = {
 
 
 def get_error_message(error_code, additional_message=None):
+    '''
+    Returns a human-readable message associated with a given error code.
+
+    Args:
+        error_code (ErrorCode): The error code to translate.
+        additional_message (str): If an error message can accept additional details, they can be specified here.
+
+    Returns:
+        An error message.
+    '''
+
     if error_code is not None:
         try:
             known_error_code = ErrorCode(error_code)
@@ -147,6 +158,10 @@ class HttpError(Exception):
 
 
 class TargetNotSupportedError(ApiError):
+    pass
+
+
+class LanguageNotSupportedError(ApiError):
     pass
 
 

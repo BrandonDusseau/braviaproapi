@@ -1,2 +1,1 @@
- * Write documentation of methods
  * Implement documentation generator

@@ -53,11 +53,31 @@ class ButtonCode(Enum):
 
 
 class Remote(object):
+    '''
+    Provides remote control functionality for the target device.
+
+    Args:
+        bravia_client: The parent Bravia instance
+        http_client: The HTTP client instance associated with the parent
+    '''
+
     def __init__(self, bravia_client, http_client):
         self.bravia_client = bravia_client
         self.http_client = http_client
 
     def send_button(self, button):
+        '''
+        Sends a remote control button press to the target device. Button codes can come from the predefined ButtonCode
+        enum, or `System.get_remote_control_info()` can return a device-specific list.
+
+        Args:
+            button (ButtonCode or str): The button code to send.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ApiError: The request to the target device failed.
+        '''
+
         self.bravia_client.initialize()
 
         if type(button) is ButtonCode:

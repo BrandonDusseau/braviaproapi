@@ -40,11 +40,29 @@ class SpeakerSetting(Enum):
 
 
 class Audio(object):
+    '''
+    Provides functionality for controlling audio on the target device.
+
+    Args:
+        bravia_client: The parent Bravia instance
+        http_client: The HTTP client instance associated with the parent
+    '''
+
     def __init__(self, bravia_client, http_client):
         self.bravia_client = bravia_client
         self.http_client = http_client
 
     def get_output_device(self):
+        '''
+        Returns the current audio output device on the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            The current output device represented as member of the `AudioOutput` enum.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -84,6 +102,22 @@ class Audio(object):
         }
 
     def get_speaker_settings(self):
+        '''
+        Returns the current audio settings for the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A dict with the following keys. Each key's value may be None if the target device does not provide that\
+            setting.
+            - `SpeakerSetting.TV_POSITION`: TvPosition; The physical location of the device.
+            - `SpeakerSetting.SUBWOOFER_LEVEL`: int; The configured volume of the subwoofer.
+            - `SpeakerSetting.SUBWOOFER_PHASE`: SubwooferPhase; The phase setting of the subwoofer.
+            - `SpeakerSetting.SUBWOOFER_FREQUENCY`: int; The confiugred frequency at which the subwoofer activates.
+            - `SpeakerSetting.SUBWOOFER_POWER`: bool; whether the subwoofer is powered on or not.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -152,6 +186,21 @@ class Audio(object):
         return settings
 
     def get_volume_information(self):
+        '''
+        Returns the current volume information of each audio output device on the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A list of objects containing the following properties:
+            - `min_volume`: int; The minimum volume setting for the audio device.
+            - `max_volume`: int; The maximum volume setting for the audio device.
+            - `muted`: bool; whether the audio device is muted.
+            - `type`: VolumeDevice; The audio device represented by this entry.
+            - `volume`: int; The current volume of the audio device.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -187,12 +236,37 @@ class Audio(object):
         return devices
 
     def mute(self):
+        '''
+        Mutes the current audio output device on the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+        '''
+
         self.set_mute(True)
 
     def unmute(self):
+        '''
+        Unmutes the current audio output device on the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+        '''
+
         self.set_mute(False)
 
     def set_mute(self, mute):
+        '''
+        Mutes or unmutes the current audio output device on the target device.
+
+        Args:
+            mute (bool): If true, mutes the device. Otherwise, unmutes the device.
+
+        Raises:
+            TypeError: `mute` is not a bool.
+            ApiError: The request to the target device failed.
+        '''
+
         self.bravia_client.initialize()
 
         if type(mute) is not bool:
@@ -209,18 +283,70 @@ class Audio(object):
             raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_volume_level(self, volume, show_ui=True, device=None):
+        '''
+        Sets the volume level of the specified audio output device on the target device.
+
+        Args:
+            volume (int): The volume to set on the target device. Generally this is on a scale from 0 to 100, but\
+                          this may vary by device.
+            show_ui (bool): Default True; Whether to display the volume UI on the target device when changing volume.
+            device (VolumeDevice): Default None; Specifies which audio device to change the volume of. If not\
+                                   specified, affects all audio devices. May not be `VolumeDevice.UNKNOWN`.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+            VolumeOutOfRangeError: The specified volume is out of range for the target device.
+            TargetNotSupportedError: The specified audio device is not supported by the target device.
+            InternalError: An internal error occurred.
+        '''
         if type(volume) is not int:
             raise TypeError("volume must be an integer value")
 
         self.__set_volume(volume, show_ui, device)
 
     def increase_volume(self, increase_by=1, show_ui=True, device=None):
+        '''
+        Increases volume level of the specified audio output device on the target device.
+
+        Args:
+            increase_by (int): Default 1; How much to increase the volume on the target device.
+            show_ui (bool): Default True; Whether to display the volume UI on the target device when changing volume.
+            device (VolumeDevice): Default None; Specifies which audio device to change the volume of. If not\
+                                   specified, affects all audio devices. May not be `VolumeDevice.UNKNOWN`.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+            VolumeOutOfRangeError: The specified volume is out of range for the target device.
+            TargetNotSupportedError: The specified audio device is not supported by the target device.
+            InternalError: An internal error occurred.
+        '''
         if type(increase_by) is not int:
             raise TypeError("increase_by must be an integer value")
 
         self.__set_volume("+" + str(increase_by), show_ui, device)
 
     def decrease_volume(self, decrease_by=1, show_ui=True, device=None):
+        '''
+        Decreases volume level of the specified audio output device on the target device.
+
+        Args:
+            decrease_by (int): Default 1; How much to decrease the volume on the target device.
+            show_ui (bool): Default True; Whether to display the volume UI on the target device when changing volume.
+            device (VolumeDevice): Default None; Specifies which audio device to change the volume of. If not\
+                                   specified, affects all audio devices. May not be `VolumeDevice.UNKNOWN`.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+            VolumeOutOfRangeError: The specified volume is out of range for the target device.
+            TargetNotSupportedError: The specified audio device is not supported by the target device.
+            InternalError: An internal error occurred.
+        '''
         if type(decrease_by) is not int:
             raise TypeError("decrease_by must be an integer value")
 
@@ -278,6 +404,19 @@ class Audio(object):
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_output_device(self, output_device):
+        '''
+        Sets which audio output device the target device should use.
+
+        Args:
+            output_device (AudioOutput): The output device to use. May not be `AudioOutput.UNKNOWN`.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+            InternalError: An internal error occurred.
+        '''
+
         self.bravia_client.initialize()
 
         if type(output_device) is not AudioOutput:
@@ -311,6 +450,29 @@ class Audio(object):
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_speaker_settings(self, settings):
+        '''
+        Configures the settings relating to speakers on the target device.
+
+        Args:
+            settings (dict): Must contain one or more of the following keys:
+                             - `SpeakerSetting.TV_POSITION`: The physical location of the device (TvPosition enum).\
+                                                             May not be `TvPosition.UNKNOWN`.
+                             - `SpeakerSetting.SUBWOOFER_LEVEL`: The configured volume of the subwoofer. Generally\
+                                                                 a value between 0 and 24, but may vary by device.
+                             - `SpeakerSetting.SUBWOOFER_PHASE`: The phase setting of the subwoofer (SubwooferPhase\
+                                                                 enum). May not be `SubwooferPhase.UNKNOWN`.
+                             - `SpeakerSetting.SUBWOOFER_FREQUENCY`: The confiugred frequency at which the subwoofer\
+                                                                     activates. Generally a value between 0 and 30,\
+                                                                     but may vary by device.
+                             - `SpeakerSetting.SUBWOOFER_POWER`: bool; whether the subwoofer is powered on or not.
+
+         Raises:
+             TypeError: One or more members of the dict is the incorrect type.
+             ValueError: One or more members of the dict is invalid.
+             ApiError: The request to the target device failed.
+             InternalError: An internal error occurred.
+        '''
+
         self.bravia_client.initialize()
 
         if type(settings) is not dict:
@@ -390,21 +552,11 @@ class Audio(object):
         if type(value) is not int:
             raise TypeError("Setting value for SpeakerSetting.SUBWOOFER_LEVEL must be an integer type")
 
-        if value < 0 or value > 24:
-            raise ValueError(
-                "Setting value for SpeakerSetting.SUBWOOFER_LEVEL must be between 0 and 24, inclusive"
-            )
-
         return str(value)
 
     def __get_selected_sub_freq(self, value):
         if type(value) is not int:
             raise TypeError("Setting value for SpeakerSetting.SUBWOOFER_FREQUENCY must be an integer type")
-
-        if value < 0 or value > 30:
-            raise ValueError(
-                "Setting value for SpeakerSetting.SUBWOOFER_FREQUENCY must be between 0 and 30, inclusive"
-            )
 
         return str(value)
 

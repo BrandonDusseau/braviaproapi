@@ -4,7 +4,7 @@ from packaging import version
 
 
 class Bravia(object):
-    initialized = False
+    __initialized = False
 
     def __init__(self, host, passcode):
         '''
@@ -26,9 +26,10 @@ class Bravia(object):
         '''
         Initializes the API client by verifying connectivity and compatibility with the target device.
 
-        :raises: ApiError
+        Raises:
+            ApiError: The request to the target device failed.
         '''
-        if self.initialized:
+        if self.__initialized:
             return
 
         # Verify that the API version is compatible
@@ -51,4 +52,4 @@ class Bravia(object):
         ):
             raise ApiError("The target device is running an incompatible API version '{0}'".format(api_version))
 
-        self.initialized = True
+        self.__initialized = True

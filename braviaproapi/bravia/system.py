@@ -1,6 +1,6 @@
 from enum import Enum
 from dateutil import parser as date_parser
-from .errors import HttpError, ApiError, InternalError, ErrorCode, get_error_message
+from .errors import HttpError, ApiError, LanguageNotSupportedError, InternalError, ErrorCode, get_error_message
 from .util import coalesce_none_or_empty
 
 
@@ -23,21 +23,51 @@ class PowerSavingMode(Enum):
 
 
 class System(object):
+    '''
+    Provides functionality for configuring the target device.
+
+    Args:
+        bravia_client: The parent Bravia instance
+        http_client: The HTTP client instance associated with the parent
+    '''
+
     def __init__(self, bravia_client, http_client):
         self.bravia_client = bravia_client
         self.http_client = http_client
 
     def power_on(self):
+        '''
+        Powers on the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+        '''
         self.bravia_client.initialize()
 
         self.set_power_status(True)
 
     def power_off(self):
+        '''
+        Powers off the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+        '''
         self.bravia_client.initialize()
 
         self.set_power_status(False)
 
     def set_power_status(self, power_state):
+        '''
+        Powers the target device on or off.
+
+        Args:
+            power_state (bool): Whether to power the device on or off.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ApiError: The request to the target device failed.
+        '''
         self.bravia_client.initialize()
 
         if type(power_state) is not bool:
@@ -54,6 +84,16 @@ class System(object):
             raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def get_power_status(self):
+        '''
+        Returns the current power state of the target device:
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            Boolean; True if device is powered on, False if not.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -70,6 +110,16 @@ class System(object):
         raise ApiError("Unexpected getPowerStatus response '{0}'".format(response["status"]))
 
     def get_current_time(self):
+        '''
+        Gets the current system time, if set.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A DateTime object representing the current system time. If the time is not set, returns None.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -85,7 +135,23 @@ class System(object):
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def get_interface_information(self):
-        # Do not initialize this method, as it is used to determine API version during initialization
+        '''
+        Returns information about the server on the target device. This is used internally to check the current API
+        version.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A dict containing the following keys:
+            - `product_category`: str or None; The device's category name.
+            - `model_name`: str or None; The model of the device.
+            - `product_name`: str or None; The product name of the device;
+            - `server_name`: str or None; The name of the server, if the device supports multiple.
+            - `interface_version`: str or None; The API version.
+        '''
+
+        # Do not initialize the client in this method, as it is used to determine API version during initialization.
 
         try:
             response = self.http_client.request(endpoint="system", method="getInterfaceInformation", version="1.0")
@@ -103,12 +169,34 @@ class System(object):
         return interface_info
 
     def get_led_status(self):
+        '''
+        Returns the current mode of the device's LED and whether it is enabled.
+
+        The mode can be one of the following:
+        - `LedMode.DEMO`: The LED is in demo mode.
+        - `LedMode.AUTO_BRIGHTNESS`: The LED adjusts its brightness based on the ambient light.
+        - `LedMode.DARK`: The LED is dimmed.
+        - `LedMode.SIMPLE_RESPONSE`: The LED lights only when responding to a command.
+        - `LedMode.OFF`: The LED is disabled.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A dict containing the following keys, or None if the LED mode cannot be determined.
+            - `status`: bool or None; Whether the LED is enabled or not.
+            - `mode`: LedMode; Which LED mode the target device is currently using.
+        '''
+
         self.bravia_client.initialize()
 
         try:
             response = self.http_client.request(endpoint="system", method="getLEDIndicatorStatus", version="1.0")
         except HttpError as err:
-            raise ApiError(get_error_message(err.error_code, str(err))) from None
+            if err.error_code == ErrorCode.ILLEGAL_STATE.value:
+                return None
+            else:
+                raise ApiError(get_error_message(err.error_code, str(err))) from None
 
         # API may return None for LED status if it is unknown
         led_status = None
@@ -138,6 +226,26 @@ class System(object):
         }
 
     def get_network_settings(self, interface=None):
+        '''
+        Returns informaton about the target device's network configuration.
+
+        Args:
+            interface (str): The interface to get information about. Set to None for all interfaces.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A list of objects containing the following keys. If an interface is specified and not found, returns None.
+            - `name`: str or None; The name of the interface.
+            - `mac`: str or None; The MAC address of the interface.
+            - `ip_v4`: str or None; The IPv4 address of the interface, if available.
+            - `ip_v6`: str or None; The IPv6 address of the interface, if available.
+            - `netmask`: str or None; The network mask for the interface.
+            - `gateway`: str or None; The configured gateway address for the interface.
+            - `dns_servers`: list[str]; A list of DNS servers configured on the interface.
+        '''
+
         self.bravia_client.initialize()
 
         request_interface = interface or ""
@@ -164,6 +272,8 @@ class System(object):
 
         network_interfaces = []
         for iface in response:
+            dns = iface.get("dns")
+
             iface_info = {
                 "name": coalesce_none_or_empty(iface.get("netif")),
                 "mac": coalesce_none_or_empty(iface.get("hwAddr")),
@@ -171,7 +281,7 @@ class System(object):
                 "ip_v6": coalesce_none_or_empty(iface.get("ipAddrV6")),
                 "netmask": coalesce_none_or_empty(iface.get("netmask")),
                 "gateway": coalesce_none_or_empty(iface.get("gateway")),
-                "dns_servers": coalesce_none_or_empty(iface.get("dns"))
+                "dns_servers": dns if type(dns) is list and len(dns) > 0 else []
             }
             network_interfaces.append(iface_info)
 
@@ -182,6 +292,22 @@ class System(object):
             return network_interfaces
 
     def get_power_saving_mode(self):
+        '''
+        Returns the current power saving mode of the device.
+
+        This value can be one of the following:
+        - `PowerSavingMode.OFF`: Power saving is disabled.
+        - `PowerSavingMode.LOW`: Power saving mode is set to low.
+        - `PowerSavingMode.HIGH`: Power saving mode is set to high.
+        - `PowerSavingMode.PICTURE_OFF`: The display is disabled.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A value from the PowerSavingMode enum.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -202,11 +328,19 @@ class System(object):
             if saving_mode == PowerSavingMode.UNKNOWN:
                 raise ApiError("API returned unexpected power saving mode '{0}'".format(response.get("mode")))
 
-        return {
-            "mode": saving_mode
-        }
+        return saving_mode
 
     def get_remote_control_info(self):
+        '''
+        Returns a list of IRCC remote codes supported by the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A dict, where keys are the remote control button name and values are the IRCC code.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -225,6 +359,16 @@ class System(object):
         return button_codes
 
     def get_remote_access_status(self):
+        '''
+        Returns whether remote access is enabled on the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            True if remote access is enabled, False otherwise.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -237,20 +381,36 @@ class System(object):
         except HttpError as err:
             raise ApiError(get_error_message(err.error_code, str(err))) from None
 
-        if len(response) != 1:
+        if type(response) is not list or len(response) != 1:
             raise ApiError("API returned unexpected getRemoteDeviceSettings response format")
 
-        if response[0]["currentValue"] == "on":
+        if response[0].get("currentValue") == "on":
             return True
-
-        if response[0]["currentValue"] == "false":
+        elif response[0].get("currentValue") == "off":
             return False
-
-        raise ApiError(
-            "API returned unexpected getRemoteDeviceSettings response '{0}'".format(response["currentValue"])
-        )
+        else:
+            raise ApiError(
+                "API returned unexpected getRemoteDeviceSettings response '{0}'".format(response)
+            )
 
     def get_system_information(self):
+        '''
+        Returns information about the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A dict containing the following keys:
+            - `product`: str or None; The product name.
+            - `language`: str or None; The configured UI language.
+            - `model`: str or None; The device model.
+            - `serial`: str or None; The serial number of the device.
+            - `mac`: str or None; The device's MAC address.
+            - `name`: str or None; The name of the device.
+            - `generation`: str or None; The semver representation of the device's generation.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -270,7 +430,17 @@ class System(object):
 
         return sys_info
 
-    def get_wake_on_lan_information(self):
+    def get_wake_on_lan_mac(self):
+        '''
+        Returns the Wake-on-LAN (WOL) MAC address for the target device, if available.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            String MAC address of the device (format 00:00:00:00:00:00), or None if Wake-on-LAN is not available.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -278,18 +448,26 @@ class System(object):
         except HttpError as err:
             raise ApiError(get_error_message(err.error_code, str(err))) from None
 
-        if len(response) != 1:
+        if type(response) is not list:
             raise ApiError("API returned unexpected getSystemSupportedFunction response format")
 
-        wol_info = response[0]
-        if wol_info["option"] != "WOL":
-            raise ApiError("API returned unexpected option name '{0}'".format(wol_info["option"]))
+        for entry in response:
+            if entry["option"] == "WOL":
+                return entry["value"]
 
-        return {
-            "mac": wol_info["value"]
-        }
+        return None
 
     def get_wake_on_lan_status(self):
+        '''
+        Returns whether the Wake-on-LAN (WOL) function of the target device is enabled.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            True if Wake-on-LAN is enabled, False if not.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -304,6 +482,13 @@ class System(object):
         return enabled
 
     def request_reboot(self):
+        '''
+        Requests a reboot of the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -311,11 +496,27 @@ class System(object):
         except HttpError as err:
             raise ApiError(get_error_message(err.error_code, str(err))) from None
 
-    def set_led_status(self, mode, enabled=None):
-        self.bravia_client.initialize()
+    def set_led_status(self, mode):
+        '''
+        Sets the LED mode of the target device.
 
-        if enabled is not None and type(enabled) is not bool:
-            raise TypeError("enabled must be a boolean value or None")
+        The mode value can be one of the following:
+        - `LedMode.DEMO`: The LED is in demo mode.
+        - `LedMode.AUTO_BRIGHTNESS`: The LED adjusts its brightness based on the ambient light.
+        - `LedMode.DARK`: The LED is dimmed.
+        - `LedMode.SIMPLE_RESPONSE`: The LED lights only when responding to a command.
+        - `LedMode.OFF`: The LED is disabled.
+
+        Args:
+            mode (LedMode): The LED mode to set. May not be `LedMode.UNKNOWN`.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+            InternalError: An internal error occurred.
+        '''
+        self.bravia_client.initialize()
 
         if type(mode) is not LedMode:
             raise TypeError("mode must be an LedMode enum value")
@@ -339,19 +540,25 @@ class System(object):
             "mode": sent_mode
         }
 
-        # Some TVs will return an error if status is not supported, even if set to None.
-        if enabled is not None:
-            params["status"] = enabled
-
         try:
             self.http_client.request(endpoint="system", method="setLEDIndicatorStatus", params=params, version="1.1")
         except HttpError as err:
-            if err.error_code == ErrorCode.ILLEGAL_STATE.value or err.error_code == ErrorCode.ILLEGAL_ARGUMENT.value:
-                raise ApiError("The target device does not support setting LED status.")
-            else:
-                raise ApiError(get_error_message(err.error_code, str(err))) from None
+            raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_language(self, language):
+        '''
+        Sets the UI language of the target device. Note that language availability may depend on the device's region
+        settings.
+
+        Args:
+            language (str): The ISO-639-3 code for the desired language.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ApiError: The request to the target device failed.
+            LanguageNotSupportedError: The specified language is not supported by the device.
+        '''
+
         self.bravia_client.initialize()
 
         if type(language) is not str:
@@ -366,11 +573,29 @@ class System(object):
             )
         except HttpError as err:
             if err.error_code == ErrorCode.ILLEGAL_ARGUMENT.value:
-                raise ApiError("The target device does not support the specified language.")
+                raise LanguageNotSupportedError()
             else:
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_power_saving_mode(self, mode):
+        '''
+        Sets the specified power saving mode on the target device.
+
+        This value can be one of the following:
+        - `PowerSavingMode.OFF`: Power saving is disabled.
+        - `PowerSavingMode.LOW`: Power saving mode is set to low.
+        - `PowerSavingMode.HIGH`: Power saving mode is set to high.
+        - `PowerSavingMode.PICTURE_OFF`: The display is disabled.
+
+        Args:
+            mode (PowerSavingMode): The power saving mode to set. May not be `PowerSavingMode.UNKNOWN`.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ValueError: One or more arguments is invalid.
+            ApiError: The request to the target device failed.
+            InternalError: An internal error occurred.
+        '''
         self.bravia_client.initialize()
 
         if type(mode) is not PowerSavingMode:
@@ -401,6 +626,17 @@ class System(object):
             raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_wake_on_lan_status(self, enabled):
+        '''
+        Enables or disables Wake-on-LAN (WOL) on the target device.
+
+        Args:
+            enabled (bool): Whether to enable Wake-on-LAN.
+
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+            ApiError: The request to the target device failed.
+        '''
+
         self.bravia_client.initialize()
 
         if type(enabled) is not bool:

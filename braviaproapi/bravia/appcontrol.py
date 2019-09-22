@@ -12,11 +12,38 @@ class AppFeature(Enum):
 
 
 class AppControl(object):
+    '''
+    Provides functionality for interacting with applications on the target device.
+
+    Args:
+        bravia_client: The parent Bravia instance
+        http_client: The HTTP client instance associated with the parent
+    '''
+
     def __init__(self, bravia_client, http_client):
         self.bravia_client = bravia_client
         self.http_client = http_client
 
     def get_application_list(self, exclude_builtin=False):
+        '''
+        Retrieves a list of applications installed on the target device.
+
+        Args:
+            exclude_builtin (bool): If true, excludes built-in Sony applications which are not exposed on the\
+                                    home screen
+
+        Raises:
+            TypeError: `exclude_builtin` is not a bool.
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A list of objects containing the following properties:
+            - `name`: The display name of the application
+            - `uri`: The internal URI at which the application can be accessed, used when referring to the app\
+              from other functions
+            - `icon`: A network URL pointing to the application's icon image
+        '''
+
         self.bravia_client.initialize()
 
         if type(exclude_builtin) is not bool:
@@ -46,9 +73,25 @@ class AppControl(object):
         return apps
 
     def get_application_feature_status(self):
+        '''
+        Determines which features are supported by the currently running application on the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A dict with the following keys with boolean values:
+            - `textInput`: bool; True if the application currently has a text input focused
+            - `cursorDisplay`: bool; True if the application currently has an interactive cursor
+            - `webBrowse`: bool; True if the application currently has a web browser displayed (?)
+        '''
+
         self.bravia_client.initialize()
 
-        response = self.http_client.request(endpoint="appControl", method="getApplicationStatusList", version="1.0")
+        try:
+            response = self.http_client.request(endpoint="appControl", method="getApplicationStatusList", version="1.0")
+        except HttpError as err:
+            raise ApiError(get_error_message(err.error_code, str(err))) from None
 
         if type(response) is not list:
             raise ApiError("API returned unexpected response format for getApplicationStatusList")
@@ -77,6 +120,18 @@ class AppControl(object):
         return enabled_features
 
     def get_text_form(self):
+        '''
+        Decrypts and returns the contents of the text field focused on the target device. If no such field exists,\
+        returns None.
+
+        Raises:
+            InternalError: The target device was unable to encrypt the text.
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A str containing the text, or None if there is no text field focused.
+        '''
+
         self.bravia_client.initialize()
 
         encrypted_key = self.bravia_client.encryption.get_rsa_encrypted_common_key()
@@ -94,7 +149,8 @@ class AppControl(object):
                 version="1.1"
             )
         except HttpError as err:
-            if err.error_code == ErrorCode.CLIENT_MUST_WAIT.value or err.error_code == ErrorCode.ILLEGAL_STATE.value:
+            # These errors likely indicate there is no focused text field, so return None
+            if err.error_code == ErrorCode.REQUEST_DUPLICATED.value or err.error_code == ErrorCode.ILLEGAL_STATE.value:
                 return None
             elif err.error_code == ErrorCode.ENCRYPTION_ERROR.value:
                 raise InternalError("Internal error: The target device rejected our encryption key")
@@ -109,6 +165,18 @@ class AppControl(object):
         return decrypted_text
 
     def get_web_app_status(self):
+        '''
+        Returns information about the web application currently in use on the target device.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            A dict containing the following keys:
+            - `active`: bool; True if there is currently a web application running on the target device.
+            - `url`: str or None; The URL of the application currently running, None if no such app is running.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -122,6 +190,18 @@ class AppControl(object):
         }
 
     def set_active_app(self, uri):
+        '''
+        Opens the specified app on the target device.
+
+        Args:
+            uri (str): The URI of the application to open (acquired using get_application_list)
+
+        Raises:
+            TypeError: The uri parameter is not a string.
+            AppLaunchError: The application could not be opened.
+            ApiError: The request to the target device failed.
+        '''
+
         self.bravia_client.initialize()
 
         if type(uri) is not str:
@@ -148,6 +228,20 @@ class AppControl(object):
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def set_text_form(self, text):
+        '''
+        Enters the specified text in the focused text field on the target device.
+        Text is encrypted before being sent to the device.
+
+        Args:
+            text (str): The text to input
+
+        Raises:
+            TypeError: The text parameter is not a string.
+            ApiError: The request to the device failed.
+            NoFocusedTextFieldError: There is no text field to input text to on the target device.
+            InternalError: The target device failed to decrypt the text.
+        '''
+
         self.bravia_client.initialize()
 
         if type(text) is not str:
@@ -180,6 +274,13 @@ class AppControl(object):
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
 
     def terminate_all_apps(self):
+        '''
+        Instructs the target device to terminate all running applications.
+
+        Raises:
+            ApiError: The request to the target device failed.
+        '''
+
         self.bravia_client.initialize()
 
         try:

@@ -7,6 +7,14 @@ from Crypto.Util.Padding import pad, unpad
 
 
 class Encryption(object):
+    '''
+    Provides encryption functionality for communicating with the target device.
+
+    Args:
+        bravia_client: The parent Bravia instance
+        http_client: The HTTP client instance associated with the parent
+    '''
+
     def __init__(self, bravia_client, http_client):
         self.bravia_client = bravia_client
         self.http_client = http_client
@@ -14,6 +22,16 @@ class Encryption(object):
         self.aes_initialization_vector = get_random_bytes(AES.block_size)
 
     def get_public_key(self):
+        '''
+        Gets the target device's public encryption key.
+
+        Raises:
+            ApiError: The request to the target device failed.
+
+        Returns:
+            The device's public key, base64 encoded.
+        '''
+
         self.bravia_client.initialize()
 
         try:
@@ -35,6 +53,17 @@ class Encryption(object):
         return response["publicKey"]
 
     def get_rsa_encrypted_common_key(self):
+        '''
+        Returns a common key to be used in encrypted communication with the target device.
+
+        This common key is generated when the Bravia client is initialized and used throghout the life of the
+        application.
+
+        Returns:
+            An AES common key, encrypted with RSA, to be sent to the target device. If no encryption
+            capability is available on the target device, returns None.
+        '''
+
         try:
             pubkey_base64 = self.get_public_key()
         except [ApiError, HttpError]:
@@ -43,7 +72,7 @@ class Encryption(object):
         if pubkey_base64 is None:
             return None
 
-        # Sony's server requires the AES key's hex representation to be contatenated with the
+        # Sony's server requires the AES key's hex representation to be concatenated with the
         # initialization vector's hex representation before encryption.
         # This is undocumented.
         aes_key_to_encrypt = self.aes_common_key.hex() + ":" + self.aes_initialization_vector.hex()
@@ -55,12 +84,31 @@ class Encryption(object):
         return b64encode(encrypted_key).decode("utf-8")
 
     def aes_encrypt_b64(self, message):
+        '''
+        Encrypts AES messages to be sent to the target device.
+
+        Args:
+            message (str): The message to encrypt.
+
+        Returns:
+            The encrypted string.
+        '''
+
         cipher = AES.new(self.aes_common_key, AES.MODE_CBC, self.aes_initialization_vector)
         ciphertext = cipher.encrypt(pad(message.encode("utf-8"), AES.block_size))
 
         return b64encode(ciphertext).decode("utf-8")
 
     def aes_decrypt_b64(self, message):
+        '''
+        Decrypts AES messages sent from the target device.
+
+        Args:
+            message (str): The message to decrypt.
+
+        Returns:
+            The decrypted string.
+        '''
         decoded_message = b64decode(message)
         cipher = AES.new(self.aes_common_key, AES.MODE_CBC, self.aes_initialization_vector)
         decrypted_message = unpad(cipher.decrypt(decoded_message), AES.block_size)
