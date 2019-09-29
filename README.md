@@ -28,6 +28,20 @@ the functionality you need.
 
 TO DO
 
+## Generating Documentation
+
+Generating the documentation for this project requires
+[Sphinx](http://www.sphinx-doc.org/en/master/usage/installation.html).
+
+Once Sphinx is installed, follow these instructions to generate documentation:
+
+1. From the `docs` directory, run:
+
+```bash
+make html
+```
+
+
 ## License
 
 This project is released under the MIT License. Refer to the LICENSE file for details.
