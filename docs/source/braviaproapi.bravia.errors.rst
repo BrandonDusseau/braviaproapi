@@ -3,6 +3,6 @@ braviaproapi.bravia.errors package
 
 .. toctree::
 
-    braviaproapi.bravia.errors.ApiError
-    braviaproapi.bravia.errors.HttpError
-    braviaproapi.bravia.errors.InternalError
+    braviaproapi.bravia.errors.apierror
+    braviaproapi.bravia.errors.httperror
+    braviaproapi.bravia.errors.internalerror
