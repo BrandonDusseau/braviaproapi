@@ -407,13 +407,13 @@ class System(object):
         Returns:
             dict: A dict containing the following keys:
 
-            * product: str or None; The product name.
-            * language: str or None; The configured UI language.
-            * model: str or None; The device model.
-            * serial: str or None; The serial number of the device.
-            * mac: str or None; The device's MAC address.
-            * name: str or None; The name of the device.
-            * generation: str or None; The semver representation of the device's generation.
+            * `product`: str or None; The product name.
+            * `language`: str or None; The configured UI language.
+            * `model`: str or None; The device model.
+            * `serial`: str or None; The serial number of the device.
+            * `mac`: str or None; The device's MAC address.
+            * `name`: str or None; The name of the device.
+            * `generation`: str or None; The semver representation of the device's generation.
         '''
 
         self.bravia_client.initialize()
