@@ -38,10 +38,11 @@ class AppControl(object):
 
         Returns:
             list(object): A list of objects containing the following properties:
-            - `name`: The display name of the application
-            - `uri`: The internal URI at which the application can be accessed, used when referring to the app\
+
+            * `name`: The display name of the application
+            * `uri`: The internal URI at which the application can be accessed, used when referring to the app\
               from other functions
-            - `icon`: A network URL pointing to the application's icon image
+            * `icon`: A network URL pointing to the application's icon image
         '''
 
         self.bravia_client.initialize()
