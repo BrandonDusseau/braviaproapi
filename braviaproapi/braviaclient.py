@@ -1,7 +1,19 @@
 from .bravia import http, system, videoscreen, encryption, appcontrol, audio, remote, avcontent
 from .bravia.errors import ApiError
 from packaging import version
+'''
+Provides the client for interacting with the Bravia API.
 
+Attributes:
+    appcontrol (AppControl): Provides app control and information.
+    audio (Audio): Provides audio control and information.
+    avcontent (AvContent): Provides control for content displayed by the device.
+    encryption (Encryption): Provides access to device encryption.
+    http_client (Http): HTTP client for direct API communication with the device.
+    remote (Remote): Provides remote control input and information relating to it.
+    system (System): Provides system information and configuration functionality.
+    videoscreen (VideoScreen): Provides control of the device's display.
+'''
 
 class BraviaClient(object):
     __initialized = False
