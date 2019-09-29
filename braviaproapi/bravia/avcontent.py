@@ -4,6 +4,36 @@ from .util import coalesce_none_or_empty
 
 
 class InputIcon(Enum):
+    '''
+    Describes icon types for input sources.
+
+    Attributes:
+        UNKNOWN: The icon type was not recognized.
+        COMPOSITE: Composite input
+        SVIDEO: S-Video input
+        COMPOSITE_COMPONENTD: Japanese D-terminal composite/component input
+        COMPONENTD: Japanese D-terminal component input
+        COMPONENT: Component (YPbPr) input
+        SCART: SCART RGB input
+        HDMI: HDMI input
+        VGA: VGA D-sub input
+        TUNER: Coaxial TV tuner input
+        TAPE: Tape input
+        DISC: Disc input
+        COMPLEX: Complex input
+        AV_AMP: Audio amplifier input
+        HOME_THEATER: Home theater system input
+        GAME: Video game input
+        CAMCORDER: Camcorder input
+        DIGITAL_CAMERA: Digital camera input
+        PC: Computer input
+        TV: Television input
+        AUDIO_SYSTEM: Audio system input
+        RECORDING_DEVICE: Recorder device input
+        PLAYBACK_DEVICE: Player device input
+        TUNER_DEVICE: Television tuner device input
+        WIFI_DISPLAY: Wi-Fi display input
+    '''
     UNKNOWN = 0
     COMPOSITE = 1
     SVIDEO = 2
