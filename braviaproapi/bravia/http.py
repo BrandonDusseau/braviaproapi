@@ -31,9 +31,9 @@ class Http(object):
             HttpError: The HTTP call failed. Refer to the `error_code` property for details.
 
         Returns:
-            The Sony API returns a list of results. If only one result is returned (the majority of the time),
-            this method extracts it and returns it alone. If more than one result is returned, this method returns
-            the full list. If no results were found, this method returns None.
+            list or None: The Sony API returns a list of results. If only one result is returned
+            (the majority of the time), this method extracts it and returns it alone. If more than one result is
+            returned, this method returns the full list. If no results were found, this method returns `None`.
         '''
 
         self.request_id += 1

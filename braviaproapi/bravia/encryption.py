@@ -60,7 +60,7 @@ class Encryption(object):
         application.
 
         Returns:
-            An AES common key, encrypted with RSA, to be sent to the target device. If no encryption
+            str: An AES common key, encrypted with RSA, to be sent to the target device. If no encryption
             capability is available on the target device, returns None.
         '''
 
@@ -91,7 +91,7 @@ class Encryption(object):
             message (str): The message to encrypt.
 
         Returns:
-            The encrypted string.
+            str: The encrypted string.
         '''
 
         cipher = AES.new(self.aes_common_key, AES.MODE_CBC, self.aes_initialization_vector)
@@ -107,7 +107,7 @@ class Encryption(object):
             message (str): The message to decrypt.
 
         Returns:
-            The decrypted string.
+            str: The decrypted string.
         '''
         decoded_message = b64decode(message)
         cipher = AES.new(self.aes_common_key, AES.MODE_CBC, self.aes_initialization_vector)

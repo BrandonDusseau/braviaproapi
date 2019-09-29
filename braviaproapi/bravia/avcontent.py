@@ -246,13 +246,14 @@ class AvContent(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A list of objects with the following keys:
-            - `uri`: str or None; The URI at which the input can be accessed, if applicable.
-            - `name`: str or None; The default title of the input, if applicable.
-            - `connected`: bool; Whether the input is currently connected.
-            - `custom_label`: str or None; The user-entered title of the input, if set.
-            - `icon`: InputIcon; The icon for the input. If no appropriate icon is available, this is InputIcon.UNKNOWN.
-            - `has_signal`: bool: Whether the input is currently sending a signal to the target device.
+            list(object): A list of objects with the following keys:
+
+            * `uri`: str or None; The URI at which the input can be accessed, if applicable.
+            * `name`: str or None; The default title of the input, if applicable.
+            * `connected`: bool; Whether the input is currently connected.
+            * `custom_label`: str or None; The user-entered title of the input, if set.
+            * `icon`: InputIcon; The icon for the input. If no appropriate icon is available, this is InputIcon.UNKNOWN.
+            * `has_signal`: bool: Whether the input is currently sending a signal to the target device.
         '''
 
         self.bravia_client.initialize()
@@ -321,10 +322,11 @@ class AvContent(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A dict containing the following keys. If no content is playing, returns None.
-            - `uri`: str or None; The URI at which the content can be accessed, if applicable.
-            - `source`: str or None; The source that the content resides within, if applicable.
-            - `name`: str or None; The title of the playing content, if applicable.
+            dict or None: A dict containing the following keys. If no content is playing, returns `None`.
+
+            * `uri`: str or None; The URI at which the content can be accessed, if applicable.
+            * `source`: str or None; The source that the content resides within, if applicable.
+            * `name`: str or None; The title of the playing content, if applicable.
         '''
 
         self.bravia_client.initialize()

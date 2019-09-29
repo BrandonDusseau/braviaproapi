@@ -91,7 +91,7 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            Boolean; True if device is powered on, False if not.
+            bool: True if device is powered on, False if not.
         '''
 
         self.bravia_client.initialize()
@@ -117,7 +117,7 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A DateTime object representing the current system time. If the time is not set, returns None.
+            DateTime or None: The current system time. If the time is not set, returns `None`.
         '''
 
         self.bravia_client.initialize()
@@ -143,12 +143,13 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A dict containing the following keys:
-            - `product_category`: str or None; The device's category name.
-            - `model_name`: str or None; The model of the device.
-            - `product_name`: str or None; The product name of the device;
-            - `server_name`: str or None; The name of the server, if the device supports multiple.
-            - `interface_version`: str or None; The API version.
+            dict: A dict containing the following keys:
+
+            * `product_category`: str or None; The device's category name.
+            * `model_name`: str or None; The model of the device.
+            * `product_name`: str or None; The product name of the device;
+            * `server_name`: str or None; The name of the server, if the device supports multiple.
+            * `interface_version`: str or None; The API version.
         '''
 
         # Do not initialize the client in this method, as it is used to determine API version during initialization.
@@ -183,9 +184,10 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A dict containing the following keys, or None if the LED mode cannot be determined.
-            - `status`: bool or None; Whether the LED is enabled or not.
-            - `mode`: LedMode; Which LED mode the target device is currently using.
+            dict or None: A dict containing the following keys, or None if the LED mode cannot be determined.
+
+            * `status`: bool or None; Whether the LED is enabled or not.
+            * `mode`: LedMode; Which LED mode the target device is currently using.
         '''
 
         self.bravia_client.initialize()
@@ -236,14 +238,16 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A list of objects containing the following keys. If an interface is specified and not found, returns None.
-            - `name`: str or None; The name of the interface.
-            - `mac`: str or None; The MAC address of the interface.
-            - `ip_v4`: str or None; The IPv4 address of the interface, if available.
-            - `ip_v6`: str or None; The IPv6 address of the interface, if available.
-            - `netmask`: str or None; The network mask for the interface.
-            - `gateway`: str or None; The configured gateway address for the interface.
-            - `dns_servers`: list[str]; A list of DNS servers configured on the interface.
+            list(object) or None: A list of objects containing the following keys. If an interface is specified and
+            not found, returns `None`.
+
+            * `name`: str or None; The name of the interface.
+            * `mac`: str or None; The MAC address of the interface.
+            * `ip_v4`: str or None; The IPv4 address of the interface, if available.
+            * `ip_v6`: str or None; The IPv6 address of the interface, if available.
+            * `netmask`: str or None; The network mask for the interface.
+            * `gateway`: str or None; The configured gateway address for the interface.
+            * `dns_servers`: list[str]; A list of DNS servers configured on the interface.
         '''
 
         self.bravia_client.initialize()
@@ -305,7 +309,7 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A value from the PowerSavingMode enum.
+            PowerSavingMode: The current power saving mode.
         '''
 
         self.bravia_client.initialize()
@@ -338,7 +342,7 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A dict, where keys are the remote control button name and values are the IRCC code.
+            dict: A mapping of remote control button name (str) to IRCC code (str).
         '''
 
         self.bravia_client.initialize()
@@ -366,7 +370,7 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            True if remote access is enabled, False otherwise.
+            bool: True if remote access is enabled, False otherwise.
         '''
 
         self.bravia_client.initialize()
@@ -401,14 +405,15 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A dict containing the following keys:
-            - `product`: str or None; The product name.
-            - `language`: str or None; The configured UI language.
-            - `model`: str or None; The device model.
-            - `serial`: str or None; The serial number of the device.
-            - `mac`: str or None; The device's MAC address.
-            - `name`: str or None; The name of the device.
-            - `generation`: str or None; The semver representation of the device's generation.
+            dict: A dict containing the following keys:
+
+            * product: str or None; The product name.
+            * language: str or None; The configured UI language.
+            * model: str or None; The device model.
+            * serial: str or None; The serial number of the device.
+            * mac: str or None; The device's MAC address.
+            * name: str or None; The name of the device.
+            * generation: str or None; The semver representation of the device's generation.
         '''
 
         self.bravia_client.initialize()
@@ -438,7 +443,7 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            String MAC address of the device (format 00:00:00:00:00:00), or None if Wake-on-LAN is not available.
+            str: String MAC address of the device (format `00:00:00:00:00:00`), or None if Wake-on-LAN is not available.
         '''
 
         self.bravia_client.initialize()
@@ -465,7 +470,7 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            True if Wake-on-LAN is enabled, False if not.
+            bool: True if Wake-on-LAN is enabled, False if not.
         '''
 
         self.bravia_client.initialize()

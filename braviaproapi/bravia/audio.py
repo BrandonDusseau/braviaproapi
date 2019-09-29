@@ -196,7 +196,7 @@ class Audio(object):
         Returns:
             list(object): A list of objects containing the following properties:
 
-            * `min_volume` - int; The minimum volume setting for the audio device.
+            * `min_volume`: int; The minimum volume setting for the audio device.
             * `max_volume`: int; The maximum volume setting for the audio device.
             * `muted`: bool; whether the audio device is muted.
             * `type`: VolumeDevice; The audio device represented by this entry.
