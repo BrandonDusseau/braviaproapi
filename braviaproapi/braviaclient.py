@@ -2,6 +2,7 @@ from .bravia import http, system, videoscreen, encryption, appcontrol, audio, re
 from .bravia.errors import ApiError
 from packaging import version
 
+
 class BraviaClient(object):
     '''
     Provides the client for interacting with the Bravia API.

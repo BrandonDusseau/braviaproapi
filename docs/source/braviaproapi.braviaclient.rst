@@ -5,5 +5,3 @@ braviaproapi.BraviaClient
     :members:
     :show-inheritance:
     :exclude-members: initialize
-
-    .. automethod:: __init__

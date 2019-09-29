@@ -3,6 +3,15 @@ from .errors import HttpError, ApiError, InternalError, InvalidStateError, Error
 
 
 class SceneMode(Enum):
+    '''
+    Specifies the screen mode of the target device.
+
+    Attributes:
+        UNKNOWN: The screen mode was not recognized.
+        AUTO: Automatically sets the scene based on content.
+        AUTO_24P_SYNC: Automatically selects "Cinema" mode for 24Hz content, otherwise same as AUTO.
+        GENERAL: Turns off scene select.
+    '''
     UNKNOWN = 0
     AUTO = 1
     AUTO_24P_SYNC = 2
@@ -25,11 +34,6 @@ class VideoScreen(object):
     def set_scene_setting(self, setting):
         '''
         Sets the scene mode for the display.
-
-        One of the following modes can be used:
-        - `SceneMode.AUTO`: Automatically sets scene based on content.
-        - `SceneMode.AUTO_24P_SYNC`: Automatically selects "Cinema" mode for 24Hz content, otherwise same as AUTO.
-        - `SceneMode.GENERAL`: Turns off scene select.
 
         Args:
             setting (SceneMode): The scene mode to set. May not be `SceneMode.UNKNOWN`.

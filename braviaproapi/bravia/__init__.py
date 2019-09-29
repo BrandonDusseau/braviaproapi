@@ -5,7 +5,6 @@ from .encryption import Encryption
 from .http import Http
 from .remote import Remote
 from .system import System
-from .videoscreen import VideoScreen
+from .videoscreen import VideoScreen, SceneMode
 
-__all__ = ('AppControl', 'Audio', 'AvContent', 'Encryption',
-           'Http', 'Remote', 'System', 'VideoScreen')
+__all__ = ('AppControl', 'Audio', 'AvContent', 'Encryption', 'Http', 'Remote', 'System', 'VideoScreen', 'SceneMode')
