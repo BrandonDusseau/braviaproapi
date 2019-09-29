@@ -5,6 +5,15 @@ from .util import coalesce_none_or_empty
 
 
 class AppFeature(Enum):
+    '''
+    Describes which features are supported by the current app.
+
+    Attributes:
+        UNKNOWN: The app feature was not recognized.
+        TEXT_INPUT: The app has a text field focused.
+        CURSOR_DISPLAY: The app has a cursor displayed.
+        WEB_BROWSE: The app is using an embedded web browser.
+    '''
     UNKNOWN = 0
     TEXT_INPUT = 1
     CURSOR_DISPLAY = 2

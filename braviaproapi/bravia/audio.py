@@ -5,6 +5,16 @@ from .errors import HttpError, ApiError, InternalError, ErrorCode, get_error_mes
 
 
 class AudioOutput(Enum):
+    '''
+    Describes the audio output device used by the target device.
+
+    Attributes:
+        UNKNOWN: The audio output was not recognized.
+        SPEAKER: An external speaker.
+        SPEAKER_HDMI: An external HDMI-connected speaker.
+        HDMI: HDMI audio output
+        AUDIO_SYSTEM: Internal speakers
+    '''
     UNKNOWN = 0
     SPEAKER = 1
     SPEAKER_HDMI = 2
@@ -13,24 +23,59 @@ class AudioOutput(Enum):
 
 
 class TvPosition(Enum):
+    '''
+    Describes the mounting position of the device.
+
+    Attributes:
+        UNKNOWN: The TV position was not recognized.
+        TABLE_TOP: The TV is standing on a table.
+        WALL_MOUNT: The TV is mounted on a wall.
+    '''
     UNKNOWN = 0
     TABLE_TOP = 1
     WALL_MOUNT = 2
 
 
 class SubwooferPhase(Enum):
+    '''
+    Describes the phase polarity setting of the wireless subwoofer.
+
+    Attributes:
+        UNKNOWN: The subwoofer phase was not recognized.
+        NORMAL: The subwoofer is using normal polarity.
+        REVERSE: The subwoofer is using reverse polarity.
+    '''
     UNKNOWN = 0
     NORMAL = 1
     REVERSE = 2
 
 
 class VolumeDevice(Enum):
+    '''
+    Describes the output device that the volume level is applied to.
+
+    Attributes:
+        UNKNOWN: The volume device was not recognized.
+        SPEAKERS: The speaker output.
+        HEADPHONES: The headphone output.
+    '''
     UNKNOWN = 0
     SPEAKERS = 1
     HEADPHONES = 2
 
 
 class SpeakerSetting(Enum):
+    '''
+    Describes available settings relating to audio.
+
+    Attributes:
+        UNKNOWN: The SpeakerSetting was not recognized.
+        TV_POSITION: The mounting position of the device.
+        SUBWOOFER_LEVEL: The volume level of the wireless subwoofer.
+        SUBWOOFER_FREQUENCY: The frequency setting of the wireless subwoofer.
+        SUBWOOFER_PHASE: The phase polarity of the wireless subwoofer.
+        SUBWOOFER_POWER: Whether the wireless subwoofer is powered on or not.
+    '''
     UNKNOWN = 0
     TV_POSITION = 1
     SUBWOOFER_LEVEL = 2

@@ -1,5 +1,5 @@
-from .appcontrol import AppControl
-from .audio import Audio
+from .appcontrol import AppControl, AppFeature
+from .audio import Audio, AudioOutput, TvPosition, SubwooferPhase, VolumeDevice, SpeakerSetting
 from .avcontent import AvContent, InputIcon
 from .encryption import Encryption
 from .http import Http
@@ -8,4 +8,5 @@ from .system import System, LedMode, PowerSavingMode
 from .videoscreen import VideoScreen, SceneMode
 
 __all__ = ('AppControl', 'Audio', 'AvContent', 'Encryption', 'Http', 'Remote', 'System', 'VideoScreen', 'SceneMode',
-           'LedMode', 'PowerSavingMode', 'ButtonCode', 'InputIcon')
+           'LedMode', 'PowerSavingMode', 'ButtonCode', 'InputIcon', 'AudioOutput', 'TvPosition', 'SubwooferPhase',
+           'VolumeDevice', 'SpeakerSetting', 'AppFeature')
