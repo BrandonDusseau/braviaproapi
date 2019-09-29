@@ -60,7 +60,7 @@ class Audio(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            The current output device represented as member of the `AudioOutput` enum.
+            AudioOutput: The current output device.
         '''
 
         self.bravia_client.initialize()
@@ -109,13 +109,14 @@ class Audio(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A dict with the following keys. Each key's value may be None if the target device does not provide that\
+            dict: A dict with the following keys. Each key's value may be None if the target device does not provide that\
             setting.
-            - `SpeakerSetting.TV_POSITION`: TvPosition; The physical location of the device.
-            - `SpeakerSetting.SUBWOOFER_LEVEL`: int; The configured volume of the subwoofer.
-            - `SpeakerSetting.SUBWOOFER_PHASE`: SubwooferPhase; The phase setting of the subwoofer.
-            - `SpeakerSetting.SUBWOOFER_FREQUENCY`: int; The confiugred frequency at which the subwoofer activates.
-            - `SpeakerSetting.SUBWOOFER_POWER`: bool; whether the subwoofer is powered on or not.
+
+            * `SpeakerSetting.TV_POSITION`: TvPosition; The physical location of the device.
+            * `SpeakerSetting.SUBWOOFER_LEVEL`: int; The configured volume of the subwoofer.
+            * `SpeakerSetting.SUBWOOFER_PHASE`: SubwooferPhase; The phase setting of the subwoofer.
+            * `SpeakerSetting.SUBWOOFER_FREQUENCY`: int; The confiugred frequency at which the subwoofer activates.
+            * `SpeakerSetting.SUBWOOFER_POWER`: bool; whether the subwoofer is powered on or not.
         '''
 
         self.bravia_client.initialize()
@@ -193,12 +194,13 @@ class Audio(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A list of objects containing the following properties:
-            - `min_volume`: int; The minimum volume setting for the audio device.
-            - `max_volume`: int; The maximum volume setting for the audio device.
-            - `muted`: bool; whether the audio device is muted.
-            - `type`: VolumeDevice; The audio device represented by this entry.
-            - `volume`: int; The current volume of the audio device.
+            list(object): A list of objects containing the following properties:
+
+            * `min_volume` - int; The minimum volume setting for the audio device.
+            * `max_volume`: int; The maximum volume setting for the audio device.
+            * `muted`: bool; whether the audio device is muted.
+            * `type`: VolumeDevice; The audio device represented by this entry.
+            * `volume`: int; The current volume of the audio device.
         '''
 
         self.bravia_client.initialize()

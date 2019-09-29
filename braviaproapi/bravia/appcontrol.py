@@ -81,11 +81,11 @@ class AppControl(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            dict
-            A dict with the following keys with boolean values:
-            - `textInput`: bool; True if the application currently has a text input focused
-            - `cursorDisplay`: bool; True if the application currently has an interactive cursor
-            - `webBrowse`: bool; True if the application currently has a web browser displayed (?)
+            dict: A dict with the following keys with boolean values:
+
+            * `textInput`: bool; True if the application currently has a text input focused
+            * `cursorDisplay`: bool; True if the application currently has an interactive cursor
+            * `webBrowse`: bool; True if the application currently has a web browser displayed (?)
         '''
 
         self.bravia_client.initialize()
@@ -131,8 +131,7 @@ class AppControl(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            str or None
-            A str containing the text, or None if there is no text field focused.
+            str or None: The text, or `None` if no text field is currently focused.
         '''
 
         self.bravia_client.initialize()
@@ -175,10 +174,10 @@ class AppControl(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            dict
-            A dict containing the following keys:
-            - `active`: bool; True if there is currently a web application running on the target device.
-            - `url`: str or None; The URL of the application currently running, None if no such app is running.
+            dict: A dict containing the following keys:
+
+            * `active`: bool; True if there is currently a web application running on the target device.
+            * `url`: str or None; The URL of the application currently running, None if no such app is running.
         '''
 
         self.bravia_client.initialize()
