@@ -4,6 +4,57 @@ from .errors import HttpError, ApiError, get_error_message
 
 # These are some defaults specified by Sony
 class ButtonCode(Enum):
+    '''
+    Describes the default button codes for the IRCC remote control interface.
+
+    Attributes:
+        POWER: Power on/off
+        INPUT: Change input source
+        SYNC_MENU: Open the Bravia Sync menu
+        HDMI_1: Switch to HDMI 1 source
+        HDMI_2: Switch to HDMI 2 source
+        HDMI_3: Switch to HDMI 3 source
+        HDMI_4: Switch to HDMI 4 source
+        NUM_1: '1' key
+        NUM_2: '2' key
+        NUM_3: '3' key
+        NUM_4: '4' key
+        NUM_5: '5' key
+        NUM_6: '6' key
+        NUM_7: '7' key
+        NUM_8: '8' key
+        NUM_9: '9' key
+        NUM_0: '0' key
+        DOT: '.' key
+        CAPTION: Set closed captioning mode
+        RED: Red favorite key
+        GREEN: Green favorite key
+        YELLOW: Yellow favorite key
+        BLUE: Blue favorite key
+        UP: Up direcitonal key
+        DOWN: Down directional key
+        RIGHT: Right directional key
+        LEFT: Left directional key
+        CONFIRM: Confirm/OK key
+        HELP: Opens contextual help
+        DISPLAY: Opens display options
+        OPTIONS: Opens options (not sure what this does)
+        BACK: Returns to previous screen
+        HOME: Goes to home screen
+        VOLUME_UP: Increase volume by one unit
+        VOLUME_DOWN: Decrease volume by one unit
+        MUTE: Mute audio
+        AUDIO: Switch audio mode
+        CHANNEL_UP: Go to next TV channel
+        CHANNEL_DOWN: Go to previous TV channel
+        PLAY: Play content
+        STOP: Stop content
+        FLASH_PLUS: Unknown
+        FLASH_MINUS: Unknown
+        PREV: Go to previous track
+        NEXT: Go to next track
+
+    '''
     POWER = "AAAAAQAAAAEAAAAVAw=="
     INPUT = "AAAAAQAAAAEAAAAlAw=="
     SYNC_MENU = "AAAAAgAAABoAAABYAw=="
