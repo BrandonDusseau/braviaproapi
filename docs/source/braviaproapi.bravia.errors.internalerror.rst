@@ -1,6 +1,6 @@
-braviaproapi.bravia.Encryption
-==============================
+braviaproapi.bravia.InternalError
+=================================
 
-.. autoclass:: braviaproapi.bravia.Encryption
+.. autoclass:: braviaproapi.bravia.InternalError
     :members:
     :show-inheritance:
