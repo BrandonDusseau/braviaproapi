@@ -15,16 +15,16 @@ class BraviaClient(object):
         remote (Remote): Provides remote control input and information relating to it.
         system (System): Provides system information and configuration functionality.
         videoscreen (VideoScreen): Provides control of the device's display.
+
+        Args:
+            host (str): The IP address or domain name belonging to the target device
+            passcode (str): The pre-shared key configured on the target device
     '''
     __initialized = False
 
     def __init__(self, host, passcode):
         '''
         Creates an instance of the Bravia API client.
-
-        Args:
-            host (str): The IP address or domain name belonging to the target device
-            passcode (str): The pre-shared key configured on the target device
         '''
         self.http_client = http.Http(host=host, psk=passcode)
         self.encryption = encryption.Encryption(bravia_client=self, http_client=self.http_client)
