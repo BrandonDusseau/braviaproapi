@@ -9,6 +9,7 @@ Library for communicating with Sony Bravia TVs utilizing its Bravia Professional
 
 This library requires Python 3.7 (tentative) or higher. You can install it with `pip install braviaproapi`.
 
+
 ## Enabling the API on the TV
 
 These instructions are based on a 2015 Bravia TV running Android 7.0 (Nougat). The steps may differ on
@@ -24,11 +25,13 @@ the functionality you need.
 3. Set **Authentication** to **Normal and Pre-Shared Key**
 4. Select **Pre-Shared Key** and specify the passcode to initiate your API.
 
+
 ## Using the library
 
 TO DO
 
-## Generating Documentation
+
+## Generating Documentation Locally
 
 Generating the documentation for this project requires
 [Sphinx](http://www.sphinx-doc.org/en/master/usage/installation.html).
