@@ -43,7 +43,7 @@ class AppControl(object):
 
         Raises:
             TypeError: `exclude_builtin` is not a bool.
-            ApiError: The request to the target device failed.
+            :class:`ApiError`: The request to the target device failed.
 
         Returns:
             list(object): A list of objects containing the following properties:
@@ -87,7 +87,7 @@ class AppControl(object):
         Determines which features are supported by the currently running application on the target device.
 
         Raises:
-            ApiError: The request to the target device failed.
+            :class:`ApiError`: The request to the target device failed.
 
         Returns:
             dict: A dict with the following keys with boolean values:
@@ -137,7 +137,7 @@ class AppControl(object):
 
         Raises:
             InternalError: The target device was unable to encrypt the text.
-            ApiError: The request to the target device failed.
+            :class:`ApiError`: The request to the target device failed.
 
         Returns:
             str or None: The text, or `None` if no text field is currently focused.
@@ -180,7 +180,7 @@ class AppControl(object):
         Returns information about the web application currently in use on the target device.
 
         Raises:
-            ApiError: The request to the target device failed.
+            :class:`ApiError`: The request to the target device failed.
 
         Returns:
             dict: A dict containing the following keys:
@@ -210,8 +210,8 @@ class AppControl(object):
 
         Raises:
             TypeError: The uri parameter is not a string.
-            AppLaunchError: The application could not be opened.
-            ApiError: The request to the target device failed.
+            :class:`AppLaunchError`: The application could not be opened.
+            :class:`ApiError`: The request to the target device failed.
         '''
 
         self.bravia_client.initialize()
@@ -249,9 +249,9 @@ class AppControl(object):
 
         Raises:
             TypeError: The text parameter is not a string.
-            ApiError: The request to the device failed.
-            NoFocusedTextFieldError: There is no text field to input text to on the target device.
-            InternalError: The target device failed to decrypt the text.
+            :class:`ApiError`: The request to the device failed.
+            :class:`NoFocusedTextFieldError`: There is no text field to input text to on the target device.
+            :class:`InternalError`: The target device failed to decrypt the text.
         '''
 
         self.bravia_client.initialize()
@@ -290,7 +290,7 @@ class AppControl(object):
         Instructs the target device to terminate all running applications.
 
         Raises:
-            ApiError: The request to the target device failed.
+            :class:`ApiError`: The request to the target device failed.
         '''
 
         self.bravia_client.initialize()
