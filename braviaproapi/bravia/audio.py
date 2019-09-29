@@ -154,8 +154,8 @@ class Audio(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            dict: A dict with the following keys. Each key's value may be None if the target device does not provide that\
-            setting.
+            dict: A dict with the following :class:`SpeakerSetting` keys. Each key's value may be None if the target\
+            device does not provide that setting.
 
             * `SpeakerSetting.TV_POSITION`: TvPosition; The physical location of the device.
             * `SpeakerSetting.SUBWOOFER_LEVEL`: int; The configured volume of the subwoofer.
@@ -244,7 +244,7 @@ class Audio(object):
             * `min_volume`: int; The minimum volume setting for the audio device.
             * `max_volume`: int; The maximum volume setting for the audio device.
             * `muted`: bool; whether the audio device is muted.
-            * `type`: VolumeDevice; The audio device represented by this entry.
+            * `type`: :class:`VolumeDevice`; The audio device represented by this entry.
             * `volume`: int; The current volume of the audio device.
         '''
 
@@ -501,7 +501,7 @@ class Audio(object):
         Configures the settings relating to speakers on the target device.
 
         Args:
-            settings (dict): Must contain one or more of the following keys:
+            settings (dict): Must contain one or more of the following :class:`SpeakerSetting` keys:
                              - `SpeakerSetting.TV_POSITION`: The physical location of the device (TvPosition enum).\
                                                              May not be `TvPosition.UNKNOWN`.
                              - `SpeakerSetting.SUBWOOFER_LEVEL`: The configured volume of the subwoofer. Generally\

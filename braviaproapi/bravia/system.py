@@ -202,7 +202,7 @@ class System(object):
             dict or None: A dict containing the following keys, or None if the LED mode cannot be determined.
 
             * `status`: bool or None; Whether the LED is enabled or not.
-            * `mode`: LedMode; Which LED mode the target device is currently using.
+            * `mode`: :class:`LedMode`; Which LED mode the target device is currently using.
         '''
 
         self.bravia_client.initialize()

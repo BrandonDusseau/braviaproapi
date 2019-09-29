@@ -282,7 +282,7 @@ class AvContent(object):
             * `name`: str or None; The default title of the input, if applicable.
             * `connected`: bool; Whether the input is currently connected.
             * `custom_label`: str or None; The user-entered title of the input, if set.
-            * `icon`: InputIcon; The icon for the input. If no appropriate icon is available, this is InputIcon.UNKNOWN.
+            * `icon`: :class:`InputIcon`; The icon for the input. If no appropriate icon is available, this is InputIcon.UNKNOWN.
             * `has_signal`: bool: Whether the input is currently sending a signal to the target device.
         '''
 
