@@ -1,5 +1,5 @@
-braviaproapi.bravia package
-===========================
+braviaproapi.bravia.errors package
+==================================
 
 .. toctree::
 
