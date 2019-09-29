@@ -6,6 +6,17 @@ from .util import coalesce_none_or_empty
 
 # Possible LED modes returned by API
 class LedMode(Enum):
+    '''
+    Describes the mode of the LED indicator on the device.
+
+    Attributes:
+        UNKNOWN: The LED mode was not recognized.
+        DEMO: The LED is in demo mode.
+        AUTO_BRIGHTNESS: The LED adjusts its brightness based on the ambient light.
+        DARK: The LED is dimmed.
+        SIMPLE_RESPONSE: The LED lights only when responding to a command.
+        OFF: The LED is disabled.
+    '''
     UNKNOWN = 0
     DEMO = 1
     AUTO_BRIGHTNESS = 2
@@ -15,6 +26,17 @@ class LedMode(Enum):
 
 
 class PowerSavingMode(Enum):
+    '''
+    Describes the device's power saving mode.
+
+    Attributes:
+        UNKNOWN: The power saving mode was not recognized.
+        OFF: Power saving is disabled.
+        LOW: Power saving mode is set to low.
+        HIGH: Power saving mode is set to high.
+        PICTURE_OFF: The display is disabled.
+    '''
+
     UNKNOWN = 0,
     OFF = 1,
     LOW = 2,
@@ -173,13 +195,6 @@ class System(object):
         '''
         Returns the current mode of the device's LED and whether it is enabled.
 
-        The mode can be one of the following:
-        - `LedMode.DEMO`: The LED is in demo mode.
-        - `LedMode.AUTO_BRIGHTNESS`: The LED adjusts its brightness based on the ambient light.
-        - `LedMode.DARK`: The LED is dimmed.
-        - `LedMode.SIMPLE_RESPONSE`: The LED lights only when responding to a command.
-        - `LedMode.OFF`: The LED is disabled.
-
         Raises:
             ApiError: The request to the target device failed.
 
@@ -298,12 +313,6 @@ class System(object):
     def get_power_saving_mode(self):
         '''
         Returns the current power saving mode of the device.
-
-        This value can be one of the following:
-        - `PowerSavingMode.OFF`: Power saving is disabled.
-        - `PowerSavingMode.LOW`: Power saving mode is set to low.
-        - `PowerSavingMode.HIGH`: Power saving mode is set to high.
-        - `PowerSavingMode.PICTURE_OFF`: The display is disabled.
 
         Raises:
             ApiError: The request to the target device failed.
@@ -505,13 +514,6 @@ class System(object):
         '''
         Sets the LED mode of the target device.
 
-        The mode value can be one of the following:
-        - `LedMode.DEMO`: The LED is in demo mode.
-        - `LedMode.AUTO_BRIGHTNESS`: The LED adjusts its brightness based on the ambient light.
-        - `LedMode.DARK`: The LED is dimmed.
-        - `LedMode.SIMPLE_RESPONSE`: The LED lights only when responding to a command.
-        - `LedMode.OFF`: The LED is disabled.
-
         Args:
             mode (LedMode): The LED mode to set. May not be `LedMode.UNKNOWN`.
 
@@ -585,12 +587,6 @@ class System(object):
     def set_power_saving_mode(self, mode):
         '''
         Sets the specified power saving mode on the target device.
-
-        This value can be one of the following:
-        - `PowerSavingMode.OFF`: Power saving is disabled.
-        - `PowerSavingMode.LOW`: Power saving mode is set to low.
-        - `PowerSavingMode.HIGH`: Power saving mode is set to high.
-        - `PowerSavingMode.PICTURE_OFF`: The display is disabled.
 
         Args:
             mode (PowerSavingMode): The power saving mode to set. May not be `PowerSavingMode.UNKNOWN`.
