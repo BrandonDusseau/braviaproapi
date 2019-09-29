@@ -10,8 +10,9 @@ class BraviaClient(object):
         '''
         Creates an instance of the Bravia API client.
 
-        :param host: The IP address or domain name belonging to the target device
-        :param passcode: The pre-shared key configured on the target device
+        Args:
+            host (str): The IP address or domain name belonging to the target device
+            passcode (str): The pre-shared key configured on the target device
         '''
         self.http_client = http.Http(host=host, psk=passcode)
         self.encryption = encryption.Encryption(bravia_client=self, http_client=self.http_client)
