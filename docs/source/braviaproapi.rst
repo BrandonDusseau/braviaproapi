@@ -3,5 +3,6 @@ braviaproapi package
 
 .. toctree::
 
-    braviaproapi.bravia
     braviaproapi.braviaclient
+    braviaproapi.bravia
+    braviaproapi.bravia.errors

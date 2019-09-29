@@ -11,3 +11,4 @@ braviaproapi.bravia package
     braviaproapi.bravia.remote
     braviaproapi.bravia.system
     braviaproapi.bravia.videoscreen
+    braviaproapi.bravia.errors
