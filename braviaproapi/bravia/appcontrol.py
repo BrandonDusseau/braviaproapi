@@ -37,6 +37,7 @@ class AppControl(object):
             ApiError: The request to the target device failed.
 
         Returns:
+            list(object)
             A list of objects containing the following properties:
             - `name`: The display name of the application
             - `uri`: The internal URI at which the application can be accessed, used when referring to the app\
@@ -80,6 +81,7 @@ class AppControl(object):
             ApiError: The request to the target device failed.
 
         Returns:
+            dict
             A dict with the following keys with boolean values:
             - `textInput`: bool; True if the application currently has a text input focused
             - `cursorDisplay`: bool; True if the application currently has an interactive cursor
@@ -129,6 +131,7 @@ class AppControl(object):
             ApiError: The request to the target device failed.
 
         Returns:
+            str or None
             A str containing the text, or None if there is no text field focused.
         '''
 
@@ -172,6 +175,7 @@ class AppControl(object):
             ApiError: The request to the target device failed.
 
         Returns:
+            dict
             A dict containing the following keys:
             - `active`: bool; True if there is currently a web application running on the target device.
             - `url`: str or None; The URL of the application currently running, None if no such app is running.
