@@ -11,8 +11,8 @@ class Encryption(object):
     Provides functionality for encrypted communication with the target device.
 
     Args:
-        bravia_client: The parent Bravia instance
-        http_client: The HTTP client instance associated with the parent
+        bravia_client: The parent :class:`BraviaClient` instance.
+        http_client: The :class:`Http` instance associated with the parent client.
     '''
 
     def __init__(self, bravia_client, http_client):
@@ -62,7 +62,7 @@ class Encryption(object):
 
         Returns:
             str: An AES common key, encrypted with RSA, to be sent to the target device. If no encryption
-            capability is available on the target device, returns `None`.
+                 capability is available on the target device, returns `None`.
         '''
 
         try:

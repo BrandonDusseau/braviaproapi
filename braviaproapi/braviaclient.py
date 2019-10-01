@@ -18,8 +18,8 @@ class BraviaClient(object):
         videoscreen (VideoScreen): Provides control of the device's display.
 
     Args:
-        host (str): The IP address or domain name belonging to the target device
-        passcode (str): The pre-shared key configured on the target device
+        host (str): The IP address or domain name belonging to the target device.
+        passcode (str): The pre-shared key configured on the target device.
     '''
     __initialized = False
 

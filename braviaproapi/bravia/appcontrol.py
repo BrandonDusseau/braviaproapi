@@ -25,8 +25,8 @@ class AppControl(object):
     Provides functionality for interacting with applications on the target device.
 
     Args:
-        bravia_client: The parent Bravia instance
-        http_client: The HTTP client instance associated with the parent
+        bravia_client: The parent :class:`BraviaClient` instance.
+        http_client: The :class:`Http` instance associated with the parent client.
     '''
 
     def __init__(self, bravia_client, http_client):
@@ -38,20 +38,20 @@ class AppControl(object):
         Retrieves a list of applications installed on the target device.
 
         Args:
-            exclude_builtin (bool): If true, excludes built-in Sony applications which are not exposed on the\
-                                    home screen
+            exclude_builtin (bool): If True, excludes built-in Sony applications which are not exposed on the\
+                                    home screen.
 
         Raises:
-            TypeError: `exclude_builtin` is not a bool.
+            TypeError: One or more arguments is the incorrect type.
             ApiError: The request to the target device failed.
 
         Returns:
             list(dict): A list of dicts containing the following properties:
 
-            * `name`: The display name of the application
-            * `uri`: The internal URI at which the application can be accessed, used when referring to the app\
-              from other functions
-            * `icon`: A network URL pointing to the application's icon image
+            * name (`str or None`): The display name of the application.
+            * uri (`str or None`): The internal URI at which the application can be accessed, used when referring to\
+                the app from other functions.
+            * icon (`str or None`): A network URL pointing to the application's icon image.
         '''
 
         self.bravia_client.initialize()
@@ -92,9 +92,9 @@ class AppControl(object):
         Returns:
             dict: A dict with the following keys with boolean values:
 
-            * `textInput`: bool; True if the application currently has a text input focused
-            * `cursorDisplay`: bool; True if the application currently has an interactive cursor
-            * `webBrowse`: bool; True if the application currently has a web browser displayed (?)
+            * textInput (`bool`): True if the application currently has a text input focused.
+            * cursorDisplay (`bool`): True if the application currently has an interactive cursor.
+            * webBrowse (`bool`): True if the application currently has a web browser displayed.
         '''
 
         self.bravia_client.initialize()
@@ -132,8 +132,7 @@ class AppControl(object):
 
     def get_text_form(self):
         '''
-        Decrypts and returns the contents of the text field focused on the target device. If no such field exists,\
-        returns None.
+        Decrypts and returns the contents of the text field focused on the target device.
 
         Raises:
             InternalError: The target device was unable to encrypt the text.
@@ -186,8 +185,8 @@ class AppControl(object):
         Returns:
             dict: A dict containing the following keys:
 
-            * `active`: bool; True if there is currently a web application running on the target device.
-            * `url`: str or None; The URL of the application currently running, None if no such app is running.
+            * active (`bool`): True if there is currently a web application running on the target device.
+            * url (`str or None`): The URL of the application currently running, None if no such app is running.
         '''
 
         self.bravia_client.initialize()
@@ -207,10 +206,10 @@ class AppControl(object):
         Opens the specified app on the target device.
 
         Args:
-            uri (str): The URI of the application to open (acquired using get_application_list)
+            uri (str): The URI of the application to open (acquired using :func:`get_application_list()`)
 
         Raises:
-            TypeError: The uri parameter is not a string.
+            TypeError: One or more arguments is the incorrect type.
             AppLaunchError: The application could not be opened.
             ApiError: The request to the target device failed.
         '''
@@ -246,10 +245,10 @@ class AppControl(object):
         Text is encrypted before being sent to the device.
 
         Args:
-            text (str): The text to input
+            text (str): The text to input.
 
         Raises:
-            TypeError: The text parameter is not a string.
+            TypeError: One or more arguments is the incorrect type.
             ApiError: The request to the device failed.
             EncryptionError: The target device could not provide a valid encryption key.
             NoFocusedTextFieldError: There is no text field to input text to on the target device.

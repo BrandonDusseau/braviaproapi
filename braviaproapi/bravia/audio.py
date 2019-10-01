@@ -12,8 +12,8 @@ class AudioOutput(Enum):
         UNKNOWN: The audio output was not recognized.
         SPEAKER: An external speaker.
         SPEAKER_HDMI: An external HDMI-connected speaker.
-        HDMI: HDMI audio output
-        AUDIO_SYSTEM: Internal speakers
+        HDMI: HDMI audio output.
+        AUDIO_SYSTEM: Internal speakers.
     '''
     UNKNOWN = 0
     SPEAKER = 1
@@ -89,8 +89,8 @@ class Audio(object):
     Provides functionality for controlling audio on the target device.
 
     Args:
-        bravia_client: The parent Bravia instance
-        http_client: The HTTP client instance associated with the parent
+        bravia_client: The parent :class:`BraviaClient` instance.
+        http_client: The :class:`Http` instance associated with the parent client.
     '''
 
     def __init__(self, bravia_client, http_client):
@@ -310,7 +310,7 @@ class Audio(object):
             mute (bool): If True, mutes the device. Otherwise, unmutes the device.
 
         Raises:
-            TypeError: `mute` is not a bool.
+            TypeError: One or more arguments is the incorrect type.
             ApiError: The request to the target device failed.
         '''
 
@@ -335,12 +335,11 @@ class Audio(object):
 
         Args:
             volume (int): The volume to set on the target device. Generally this is on a scale from 0 to 100, but\
-                          this may vary by device.
+                this may vary by device.
             show_ui (bool, optional): Defaults to True. Whether to display the volume UI on the target device when\
-                                      changing volume.
+                changing volume.
             device (VolumeDevice, optional): Defaults to `None`. Specifies which audio device to change the volume of.\
-                                             If not specified, affects all audio devices. May not be\
-                                             `VolumeDevice.UNKNOWN`.
+                 If not specified, affects all audio devices. May not be `VolumeDevice.UNKNOWN`.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
@@ -362,10 +361,9 @@ class Audio(object):
         Args:
             increase_by (int, optional): Defaults to 1. How many units to increase the volume on the target device.
             show_ui (bool, optional): Defaults to True. Whether to display the volume UI on the target device when\
-                                      changing volume.
+                changing volume.
             device (VolumeDevice, optional): Defaults to `None`. Specifies which audio device to change the volume of.\
-                                             If not specified, affects all audio devices. May not be\
-                                             `VolumeDevice.UNKNOWN`.
+                If not specified, affects all audio devices. May not be `VolumeDevice.UNKNOWN`.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
@@ -387,10 +385,9 @@ class Audio(object):
         Args:
             decrease_by (int, optional): Defaults to 1. How many units to decrease the volume on the target device.
             show_ui (bool, optional): Defaults to True. Whether to display the volume UI on the target device when\
-                                      changing volume.
+                changing volume.
             device (VolumeDevice, optional): Defaults to `None`. Specifies which audio device to change the volume of.\
-                                             If not specified, affects all audio devices. May not be\
-                                             `VolumeDevice.UNKNOWN`.
+                If not specified, affects all audio devices. May not be `VolumeDevice.UNKNOWN`.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.

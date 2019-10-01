@@ -108,8 +108,8 @@ class Remote(object):
     Provides remote control functionality for the target device.
 
     Args:
-        bravia_client: The parent Bravia instance
-        http_client: The HTTP client instance associated with the parent
+        bravia_client: The parent :class:`BraviaClient` instance.
+        http_client: The :class:`Http` instance associated with the parent client.
     '''
 
     def __init__(self, bravia_client, http_client):

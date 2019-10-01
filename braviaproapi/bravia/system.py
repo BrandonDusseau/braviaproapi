@@ -49,8 +49,8 @@ class System(object):
     Provides functionality for configuring the target device.
 
     Args:
-        bravia_client: The parent Bravia instance
-        http_client: The HTTP client instance associated with the parent
+        bravia_client: The parent :class:`BraviaClient` instance.
+        http_client: The :class:`Http` instance associated with the parent client.
     '''
 
     def __init__(self, bravia_client, http_client):
@@ -559,7 +559,7 @@ class System(object):
 
         Args:
             language (str): The `ISO-639-3 <https://iso639-3.sil.org/code_tables/639/data>`_ code for the\
-                            desired language.
+                desired language.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
