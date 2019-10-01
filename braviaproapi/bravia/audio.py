@@ -520,6 +520,7 @@ class Audio(object):
                     activates. Generally a value between 0 and 30, but may vary by device.
                 * `SpeakerSetting.SUBWOOFER_POWER` (`bool`): whether the subwoofer is powered on or not.
 
+
          Raises:
              TypeError: One or more members of the dict is the incorrect type.
              ValueError: One or more members of the dict is invalid.
