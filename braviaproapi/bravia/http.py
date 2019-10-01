@@ -28,7 +28,7 @@ class Http(object):
             version (str): Default "1.0"; The version of the API endpoint to request.
 
         Raises:
-            HttpError: The HTTP call failed. Refer to the `error_code` attribute for details.
+            HttpError: The HTTP call failed. Refer to the :attr:`HttpError.error_code` attribute for details.
 
         Returns:
             list or None: The Sony API returns a list of results. If only one result is returned
@@ -98,10 +98,10 @@ class Http(object):
         Sends an HTTP request to the Sony API to execute an IRCC remote code.
 
         Args:
-            remote_code (str): The IRCC code to send.
+            remote_code (str): The base64-encoded IRCC code to send (see :class:`ButtonCode` for examples).
 
         Raises:
-            HttpError: The HTTP call failed. Does not populate the `http_error` attribute.
+            HttpError: The HTTP call failed.
         '''
 
         url = "http://{0}/sony/ircc".format(self.host)
@@ -115,16 +115,16 @@ class Http(object):
         }
 
         request = (
-            ("<s:Envelope\n"
-                "    xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"
-                "    s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n"
-                "    <s:Body>\n"
-                "        <u:X_SendIRCC xmlns:u=\"urn:schemas-sony-com:service:IRCC:1\">\n"
-                "            <IRCCCode>{0}</IRCCCode>\n"
-                "        </u:X_SendIRCC>\n"
-                "    </s:Body>\n"
-                "</s:Envelope>\n").format(remote_code)
-        )
+            "<s:Envelope\n"
+            "    xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"
+            "    s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">\n"
+            "    <s:Body>\n"
+            "        <u:X_SendIRCC xmlns:u=\"urn:schemas-sony-com:service:IRCC:1\">\n"
+            "            <IRCCCode>{0}</IRCCCode>\n"
+            "        </u:X_SendIRCC>\n"
+            "    </s:Body>\n"
+            "</s:Envelope>\n"
+        ).format(remote_code)
 
         try:
             result = requests.post(url, headers=headers, data=request, timeout=5)
