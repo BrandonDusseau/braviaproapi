@@ -154,14 +154,14 @@ class Audio(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            dict: A dict with the following :class:`SpeakerSetting` keys. Each key's value may be None if the target\
+            dict: A dict with the following :class:`SpeakerSetting` keys. Each key's value may be `None` if the target\
             device does not provide that setting.
 
-            * `SpeakerSetting.TV_POSITION`: TvPosition; The physical location of the device.
-            * `SpeakerSetting.SUBWOOFER_LEVEL`: int; The configured volume of the subwoofer.
-            * `SpeakerSetting.SUBWOOFER_PHASE`: SubwooferPhase; The phase setting of the subwoofer.
-            * `SpeakerSetting.SUBWOOFER_FREQUENCY`: int; The confiugred frequency at which the subwoofer activates.
-            * `SpeakerSetting.SUBWOOFER_POWER`: bool; whether the subwoofer is powered on or not.
+            * `SpeakerSetting.TV_POSITION` (:class:`TvPosition`): The physical location of the device.
+            * `SpeakerSetting.SUBWOOFER_LEVEL` (`int`): The configured volume of the subwoofer.
+            * `SpeakerSetting.SUBWOOFER_PHASE` (:class:`SubwooferPhase`): The phase setting of the subwoofer.
+            * `SpeakerSetting.SUBWOOFER_FREQUENCY` (`int`): The confiugred frequency at which the subwoofer activates.
+            * `SpeakerSetting.SUBWOOFER_POWER` (`bool`): whether the subwoofer is powered on or not.
         '''
 
         self.bravia_client.initialize()
@@ -241,11 +241,11 @@ class Audio(object):
         Returns:
             list(dict): A list of dicts containing the following properties:
 
-            * `min_volume`: int; The minimum volume setting for the audio device.
-            * `max_volume`: int; The maximum volume setting for the audio device.
-            * `muted`: bool; whether the audio device is muted.
-            * `type`: :class:`VolumeDevice`; The audio device represented by this entry.
-            * `volume`: int; The current volume of the audio device.
+            * min_volume (`int`): The minimum volume setting for the audio device.
+            * max_volume (`int`): The maximum volume setting for the audio device.
+            * muted (`bool`): whether the audio device is muted.
+            * type (:class:`VolumeDevice`): The audio device represented by this entry.
+            * volume (`int`): The current volume of the audio device.
         '''
 
         self.bravia_client.initialize()
@@ -307,7 +307,7 @@ class Audio(object):
         Mutes or unmutes the current audio output device on the target device.
 
         Args:
-            mute (bool): If true, mutes the device. Otherwise, unmutes the device.
+            mute (bool): If True, mutes the device. Otherwise, unmutes the device.
 
         Raises:
             TypeError: `mute` is not a bool.
@@ -336,9 +336,11 @@ class Audio(object):
         Args:
             volume (int): The volume to set on the target device. Generally this is on a scale from 0 to 100, but\
                           this may vary by device.
-            show_ui (bool): Default True; Whether to display the volume UI on the target device when changing volume.
-            device (VolumeDevice): Default None; Specifies which audio device to change the volume of. If not\
-                                   specified, affects all audio devices. May not be `VolumeDevice.UNKNOWN`.
+            show_ui (bool, optional): Defaults to True. Whether to display the volume UI on the target device when\
+                                      changing volume.
+            device (VolumeDevice, optional): Defaults to `None`. Specifies which audio device to change the volume of.\
+                                             If not specified, affects all audio devices. May not be\
+                                             `VolumeDevice.UNKNOWN`.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
@@ -358,10 +360,12 @@ class Audio(object):
         Increases volume level of the specified audio output device on the target device.
 
         Args:
-            increase_by (int): Default 1; How much to increase the volume on the target device.
-            show_ui (bool): Default True; Whether to display the volume UI on the target device when changing volume.
-            device (VolumeDevice): Default None; Specifies which audio device to change the volume of. If not\
-                                   specified, affects all audio devices. May not be `VolumeDevice.UNKNOWN`.
+            increase_by (int, optional): Defaults to 1. How many units to increase the volume on the target device.
+            show_ui (bool, optional): Defaults to True. Whether to display the volume UI on the target device when\
+                                      changing volume.
+            device (VolumeDevice, optional): Defaults to `None`. Specifies which audio device to change the volume of.\
+                                             If not specified, affects all audio devices. May not be\
+                                             `VolumeDevice.UNKNOWN`.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
@@ -381,10 +385,12 @@ class Audio(object):
         Decreases volume level of the specified audio output device on the target device.
 
         Args:
-            decrease_by (int): Default 1; How much to decrease the volume on the target device.
-            show_ui (bool): Default True; Whether to display the volume UI on the target device when changing volume.
-            device (VolumeDevice): Default None; Specifies which audio device to change the volume of. If not\
-                                   specified, affects all audio devices. May not be `VolumeDevice.UNKNOWN`.
+            decrease_by (int, optional): Defaults to 1. How many units to decrease the volume on the target device.
+            show_ui (bool, optional): Defaults to True. Whether to display the volume UI on the target device when\
+                                      changing volume.
+            device (VolumeDevice, optional): Defaults to `None`. Specifies which audio device to change the volume of.\
+                                             If not specified, affects all audio devices. May not be\
+                                             `VolumeDevice.UNKNOWN`.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
@@ -502,16 +508,11 @@ class Audio(object):
 
         Args:
             settings (dict): Must contain one or more of the following :class:`SpeakerSetting` keys.
-                * `SpeakerSetting.TV_POSITION` (:class:`TvPosition`): The physical location of the device.\
-                                                                      May not be `TvPosition.UNKNOWN`.
-                * `SpeakerSetting.SUBWOOFER_LEVEL` (`int`): The configured volume of the subwoofer. Generally\
-                                                            a value between 0 and 24, but may vary by device.
-                * `SpeakerSetting.SUBWOOFER_PHASE` (:class:`SubwooferPhase`): The phase setting of the subwoofer.\
-                                                                              May not be `SubwooferPhase.UNKNOWN`.
-                * `SpeakerSetting.SUBWOOFER_FREQUENCY` (`int`): The confiugred frequency at which the subwoofer\
-                                                                activates. Generally a value between 0 and 30,\
-                                                                but may vary by device.
-                * `SpeakerSetting.SUBWOOFER_POWER` (`bool`): whether the subwoofer is powered on or not.
+                - `SpeakerSetting.TV_POSITION` (:class:`TvPosition`): The physical location of the device. May not be `TvPosition.UNKNOWN`.
+                - `SpeakerSetting.SUBWOOFER_LEVEL` (`int`): The configured volume of the subwoofer. Generally a value between 0 and 24, but may vary by device.
+                - `SpeakerSetting.SUBWOOFER_PHASE` (:class:`SubwooferPhase`): The phase setting of the subwoofer. May not be `SubwooferPhase.UNKNOWN`.
+                - `SpeakerSetting.SUBWOOFER_FREQUENCY` (`int`): The confiugred frequency at which the subwoofer activates. Generally a value between 0 and 30, but may vary by device.
+                - `SpeakerSetting.SUBWOOFER_POWER` (`bool`): whether the subwoofer is powered on or not.
 
          Raises:
              TypeError: One or more members of the dict is the incorrect type.
