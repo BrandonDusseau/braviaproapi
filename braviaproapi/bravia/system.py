@@ -171,7 +171,7 @@ class System(object):
             * model_name (`str or None`): The model of the device.
             * product_name (`str or None`): The product name of the device;
             * server_name (`str or None`): The name of the server, if the device supports multiple.
-            * interface_version (`str or None`): The [semver](https://semver.org/) API version.
+            * interface_version (`str or None`): The `semver <https://semver.org/>`_ API version.
         '''
 
         # Do not initialize the client in this method, as it is used to determine API version during initialization.
@@ -422,7 +422,7 @@ class System(object):
             * serial (`str or None`): The serial number of the device.
             * mac (`str or None`): The device's MAC address.
             * name (`str or None`): The name of the device.
-            * generation (`str or None`): The [semver](https://semver.org/) representation of the device's generation.
+            * generation (`str or None`): The `semver <https://semver.org/>`_ representation of the device's generation.
         '''
 
         self.bravia_client.initialize()
@@ -558,7 +558,7 @@ class System(object):
         Sets the UI language of the target device. Language availabilit depends on the device's region settings.
 
         Args:
-            language (str): The [ISO-639-3](https://iso639-3.sil.org/code_tables/639/data) code for the\
+            language (str): The `ISO-639-3 <https://iso639-3.sil.org/code_tables/639/data>`_ code for the\
                             desired language.
 
         Raises:
