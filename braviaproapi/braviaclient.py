@@ -1,5 +1,5 @@
-from .bravia import http, system, videoscreen, encryption, appcontrol, audio, remote, avcontent
-from .bravia.errors import ApiError
+from .bravia import Http, System, VideoScreen, Encryption, AppControl, Audio, Remote, AvContent
+from .bravia.errors import ApiError, HttpError
 from packaging import version
 
 
@@ -24,14 +24,14 @@ class BraviaClient(object):
     __initialized = False
 
     def __init__(self, host, passcode):
-        self.http_client = http.Http(host=host, psk=passcode)
-        self.encryption = encryption.Encryption(bravia_client=self, http_client=self.http_client)
-        self.system = system.System(bravia_client=self, http_client=self.http_client)
-        self.videoscreen = videoscreen.VideoScreen(bravia_client=self, http_client=self.http_client)
-        self.appcontrol = appcontrol.AppControl(bravia_client=self, http_client=self.http_client)
-        self.audio = audio.Audio(bravia_client=self, http_client=self.http_client)
-        self.remote = remote.Remote(bravia_client=self, http_client=self.http_client)
-        self.avcontent = avcontent.AvContent(bravia_client=self, http_client=self.http_client)
+        self.http_client = Http(host=host, psk=passcode)
+        self.encryption = Encryption(bravia_client=self, http_client=self.http_client)
+        self.system = System(bravia_client=self, http_client=self.http_client)
+        self.videoscreen = VideoScreen(bravia_client=self, http_client=self.http_client)
+        self.appcontrol = AppControl(bravia_client=self, http_client=self.http_client)
+        self.audio = Audio(bravia_client=self, http_client=self.http_client)
+        self.remote = Remote(bravia_client=self, http_client=self.http_client)
+        self.avcontent = AvContent(bravia_client=self, http_client=self.http_client)
 
     def initialize(self):
         '''
@@ -46,7 +46,7 @@ class BraviaClient(object):
         # Verify that the API version is compatible
         try:
             interface_info = self.system.get_interface_information()
-        except http.HttpError as err:
+        except HttpError as err:
             raise ApiError(
                 "Unable to verify API version compatibility due to an API error: {0}".format(str(err))
             ) from None

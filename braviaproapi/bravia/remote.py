@@ -25,7 +25,7 @@ class ButtonCode(Enum):
         NUM_8: '8' key
         NUM_9: '9' key
         NUM_0: '0' key
-        DOT: '.' key
+        DOT: '.' or '-' key used for tuner subchannels
         CAPTION: Set closed captioning mode
         RED: Red favorite key
         GREEN: Green favorite key
