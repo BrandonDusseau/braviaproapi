@@ -1,6 +1,6 @@
-braviaproapi.bravia.InternalError
-=================================
+braviaproapi.bravia.errors.InternalError
+========================================
 
-.. autoclass:: braviaproapi.bravia.InternalError
+.. autoclass:: braviaproapi.bravia.errors.InternalError
     :members:
     :show-inheritance:
