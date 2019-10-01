@@ -501,7 +501,7 @@ class Audio(object):
         Configures the settings relating to speakers on the target device.
 
         Args:
-            settings (dict): Must contain one or more of the following :class:`SpeakerSetting` keys:
+            settings (dict): Must contain one or more of the following :class:`SpeakerSetting` keys.
 
                 * `SpeakerSetting.TV_POSITION` (:class:`TvPosition`): The physical location of the device.\
                                                                       May not be `TvPosition.UNKNOWN`.

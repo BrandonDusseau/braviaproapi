@@ -247,7 +247,7 @@ class System(object):
         Returns informaton about the target device's network configuration.
 
         Args:
-            interface (str): The interface to get information about. Set to None for all interfaces.
+            interface (str, optional): Defaults to `None` (all interfaces). The interface to get information about.
 
         Raises:
             ApiError: The request to the target device failed.

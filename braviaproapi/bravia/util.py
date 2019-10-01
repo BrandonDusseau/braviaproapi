@@ -6,7 +6,7 @@ def coalesce_none_or_empty(input_string):
         input_string (str or None): The string to process.
 
     Returns:
-        The input string or None if it is empty.
+        The input string or `None` if it is empty.
     '''
 
     if not input_string:

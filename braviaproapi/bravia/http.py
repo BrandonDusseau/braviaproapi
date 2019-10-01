@@ -24,8 +24,8 @@ class Http(object):
         Args:
             endpoint (str): The API endpoint to send to.
             method (str): The RPC method to execute.
-            params (dict): Parameters to send on the request.
-            version (str): The version of the API endpoint to request.
+            params (dict, optional): Defaults to `None`. Parameters to send on the request.
+            version (str, optional): Defaults to "1.0". The version of the API endpoint to request.
 
         Raises:
             HttpError: The HTTP call failed. Refer to the `error_code` attribute for details.
