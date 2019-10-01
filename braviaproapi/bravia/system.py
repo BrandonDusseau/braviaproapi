@@ -59,7 +59,7 @@ class System(object):
 
     def power_on(self):
         '''
-        Powers on the target device.
+        Wakes up the target device.
 
         Raises:
             ApiError: The request to the target device failed.
@@ -70,7 +70,7 @@ class System(object):
 
     def power_off(self):
         '''
-        Powers off the target device.
+        Puts the target device into standby.
 
         Raises:
             ApiError: The request to the target device failed.
@@ -81,10 +81,10 @@ class System(object):
 
     def set_power_status(self, power_state):
         '''
-        Powers the target device on or off.
+        Wakes or sleeps the target device.
 
         Args:
-            power_state (bool): Whether to power the device on or off.
+            power_state (bool): True to wake, False to sleep.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
@@ -113,7 +113,7 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            bool: True if device is powered on, False if not.
+            bool: True if device is awake, False if the device is in standby.
         '''
 
         self.bravia_client.initialize()
@@ -167,11 +167,11 @@ class System(object):
         Returns:
             dict: A dict containing the following keys:
 
-            * `product_category`: str or None; The device's category name.
-            * `model_name`: str or None; The model of the device.
-            * `product_name`: str or None; The product name of the device;
-            * `server_name`: str or None; The name of the server, if the device supports multiple.
-            * `interface_version`: str or None; The API version.
+            * product_category (`str or None`): The device's category name.
+            * model_name (`str or None`): The model of the device.
+            * product_name (`str or None`): The product name of the device;
+            * server_name (`str or None`): The name of the server, if the device supports multiple.
+            * interface_version (`str or None`): The [semver](https://semver.org/) API version.
         '''
 
         # Do not initialize the client in this method, as it is used to determine API version during initialization.
@@ -199,10 +199,10 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            dict or None: A dict containing the following keys, or None if the LED mode cannot be determined.
+            dict or None: A dict containing the following keys, or `None` if the LED mode cannot be determined.
 
-            * `status`: bool or None; Whether the LED is enabled or not.
-            * `mode`: :class:`LedMode`; Which LED mode the target device is currently using.
+            * status (`bool or None`): Whether the LED is enabled or not.
+            * mode (:class:`LedMode`): Which LED mode the target device is currently using.
         '''
 
         self.bravia_client.initialize()
@@ -256,13 +256,13 @@ class System(object):
             list(object) or None: A list of objects containing the following keys. If an interface is specified and
             not found, returns `None`.
 
-            * `name`: str or None; The name of the interface.
-            * `mac`: str or None; The MAC address of the interface.
-            * `ip_v4`: str or None; The IPv4 address of the interface, if available.
-            * `ip_v6`: str or None; The IPv6 address of the interface, if available.
-            * `netmask`: str or None; The network mask for the interface.
-            * `gateway`: str or None; The configured gateway address for the interface.
-            * `dns_servers`: list[str]; A list of DNS servers configured on the interface.
+            * name (`str or None`): The name of the interface.
+            * mac (`str or None`): The MAC address of the interface.
+            * ip_v4 (`str or None`): The IPv4 address of the interface, if available.
+            * ip_v6 (`str or None`): The IPv6 address of the interface, if available.
+            * netmask (`str or None`): The network mask for the interface.
+            * gateway (`str or None`): The configured gateway address for the interface.
+            * dns_servers (`list(str)`): A list of DNS servers configured on the interface.
         '''
 
         self.bravia_client.initialize()
@@ -351,7 +351,7 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            dict: A mapping of remote control button name (str) to IRCC code (str).
+            dict: A mapping of remote control button name (`str`) to IRCC code (`str`).
         '''
 
         self.bravia_client.initialize()
@@ -416,13 +416,13 @@ class System(object):
         Returns:
             dict: A dict containing the following keys:
 
-            * `product`: str or None; The product name.
-            * `language`: str or None; The configured UI language.
-            * `model`: str or None; The device model.
-            * `serial`: str or None; The serial number of the device.
-            * `mac`: str or None; The device's MAC address.
-            * `name`: str or None; The name of the device.
-            * `generation`: str or None; The semver representation of the device's generation.
+            * product (`str or None`): The product name.
+            * language (`str or None`): The configured UI language.
+            * model (`str or None`): The device model.
+            * serial (`str or None`): The serial number of the device.
+            * mac (`str or None`): The device's MAC address.
+            * name (`str or None`): The name of the device.
+            * generation (`str or None`): The [semver](https://semver.org/) representation of the device's generation.
         '''
 
         self.bravia_client.initialize()
@@ -452,7 +452,8 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            str: String MAC address of the device (format `00:00:00:00:00:00`), or None if Wake-on-LAN is not available.
+            str or None: String MAC address of the device (format `00:00:00:00:00:00`), or None if Wake-on-LAN is\
+                         not available.
         '''
 
         self.bravia_client.initialize()
@@ -497,7 +498,7 @@ class System(object):
 
     def request_reboot(self):
         '''
-        Requests a reboot of the target device.
+        Reboots the target device.
 
         Raises:
             ApiError: The request to the target device failed.
@@ -554,11 +555,11 @@ class System(object):
 
     def set_language(self, language):
         '''
-        Sets the UI language of the target device. Note that language availability may depend on the device's region
-        settings.
+        Sets the UI language of the target device. Language availabilit depends on the device's region settings.
 
         Args:
-            language (str): The ISO-639-3 code for the desired language.
+            language (str): The [ISO-639-3](https://iso639-3.sil.org/code_tables/639/data) code for the\
+                            desired language.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
