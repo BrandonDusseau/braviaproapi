@@ -24,11 +24,11 @@ class Http(object):
         Args:
             endpoint (str): The API endpoint to send to.
             method (str): The RPC method to execute.
-            params (dict): Default None; Parameters to send on the request.
-            version (str): Default "1.0"; The version of the API endpoint to request.
+            params (dict): Parameters to send on the request.
+            version (str): The version of the API endpoint to request.
 
         Raises:
-            HttpError: The HTTP call failed. Refer to the :attr:`HttpError.error_code` attribute for details.
+            HttpError: The HTTP call failed. Refer to the `error_code` attribute for details.
 
         Returns:
             list or None: The Sony API returns a list of results. If only one result is returned

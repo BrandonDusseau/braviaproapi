@@ -8,7 +8,7 @@ from Crypto.Util.Padding import pad, unpad
 
 class Encryption(object):
     '''
-    Provides encryption functionality for communicating with the target device.
+    Provides functionality for encrypted communication with the target device.
 
     Args:
         bravia_client: The parent Bravia instance
@@ -29,7 +29,8 @@ class Encryption(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            The device's public key, base64 encoded.
+            str or None: The device's public key, base64-encoded. If the device does not have a public key, returns\
+                         `None`.
         '''
 
         self.bravia_client.initialize()
@@ -61,7 +62,7 @@ class Encryption(object):
 
         Returns:
             str: An AES common key, encrypted with RSA, to be sent to the target device. If no encryption
-            capability is available on the target device, returns None.
+            capability is available on the target device, returns `None`.
         '''
 
         try:
@@ -69,6 +70,7 @@ class Encryption(object):
         except [ApiError, HttpError]:
             return None
 
+        # get_public_key may return None
         if pubkey_base64 is None:
             return None
 
@@ -90,9 +92,15 @@ class Encryption(object):
         Args:
             message (str): The message to encrypt.
 
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+
         Returns:
             str: The encrypted string.
         '''
+
+        if type(message) is not str:
+            raise TypeError("message must be a str value")
 
         cipher = AES.new(self.aes_common_key, AES.MODE_CBC, self.aes_initialization_vector)
         ciphertext = cipher.encrypt(pad(message.encode("utf-8"), AES.block_size))
@@ -106,9 +114,16 @@ class Encryption(object):
         Args:
             message (str): The message to decrypt.
 
+        Raises:
+            TypeError: One or more arguments is the incorrect type.
+
         Returns:
             str: The decrypted string.
         '''
+
+        if type(message) is not str:
+            raise TypeError("message must be a str value")
+
         decoded_message = b64decode(message)
         cipher = AES.new(self.aes_common_key, AES.MODE_CBC, self.aes_initialization_vector)
         decrypted_message = unpad(cipher.decrypt(decoded_message), AES.block_size)
