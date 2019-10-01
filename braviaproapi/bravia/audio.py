@@ -509,7 +509,6 @@ class Audio(object):
         Args:
             settings (dict):
                 Must contain one or more of the following :class:`SpeakerSetting` keys.
-
                 * `SpeakerSetting.TV_POSITION` (:class:`TvPosition`): The physical location of the device. May not\
                     be `TvPosition.UNKNOWN`.
                 * `SpeakerSetting.SUBWOOFER_LEVEL` (`int`): The configured volume of the subwoofer. Generally a value\
@@ -520,12 +519,11 @@ class Audio(object):
                     activates. Generally a value between 0 and 30, but may vary by device.
                 * `SpeakerSetting.SUBWOOFER_POWER` (`bool`): whether the subwoofer is powered on or not.
 
-
-         Raises:
-             TypeError: One or more members of the dict is the incorrect type.
-             ValueError: One or more members of the dict is invalid.
-             ApiError: The request to the target device failed.
-             InternalError: An internal error occurred.
+        Raises:
+            TypeError: One or more members of the dict is the incorrect type.
+            ValueError: One or more members of the dict is invalid.
+            ApiError: The request to the target device failed.
+            InternalError: An internal error occurred.
         '''
 
         self.bravia_client.initialize()
