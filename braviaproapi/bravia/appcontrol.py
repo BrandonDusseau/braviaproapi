@@ -46,7 +46,7 @@ class AppControl(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            list(object): A list of objects containing the following properties:
+            list(dict): A list of dicts containing the following properties:
 
             * `name`: The display name of the application
             * `uri`: The internal URI at which the application can be accessed, used when referring to the app\

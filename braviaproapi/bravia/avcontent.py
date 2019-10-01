@@ -140,6 +140,7 @@ class AvContent(object):
         Returns:
             list(dict) or None: A list of dicts containing the following keys. If no content is available, returns\
                                `None`.
+
             * index (`str`): The position of the content in the list.
             * name (`str or None`): The title of the content, if applicable.
             * uri (`str or None`): The URI at which the content can be accessed, if applicable.
