@@ -501,17 +501,21 @@ class Audio(object):
         Configures the settings relating to speakers on the target device.
 
         Args:
-            settings (dict): Must contain one or more of the following :class:`SpeakerSetting` keys:\
+            settings (dict): Must contain one or more of the following :class:`SpeakerSetting` keys:
 
                 * `SpeakerSetting.TV_POSITION` (:class:`TvPosition`): The physical location of the device.\
                                                                       May not be `TvPosition.UNKNOWN`.
+
                 * `SpeakerSetting.SUBWOOFER_LEVEL` (`int`): The configured volume of the subwoofer. Generally\
                                                             a value between 0 and 24, but may vary by device.
+
                 * `SpeakerSetting.SUBWOOFER_PHASE` (:class:`SubwooferPhase`): The phase setting of the subwoofer.\
                                                                               May not be `SubwooferPhase.UNKNOWN`.
+
                 * `SpeakerSetting.SUBWOOFER_FREQUENCY` (`int`): The confiugred frequency at which the subwoofer\
                                                                 activates. Generally a value between 0 and 30,\
                                                                 but may vary by device.
+
                 * `SpeakerSetting.SUBWOOFER_POWER` (`bool`): whether the subwoofer is powered on or not.
 
          Raises:
