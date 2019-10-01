@@ -36,9 +36,9 @@ class ButtonCode(Enum):
         RIGHT: Right directional key
         LEFT: Left directional key
         CONFIRM: Confirm/OK key
-        HELP: Opens contextual help
+        HELP: Opens system help
         DISPLAY: Opens display options
-        OPTIONS: Opens options (not sure what this does)
+        OPTIONS: Opens options menu (Action Menu)
         BACK: Returns to previous screen
         HOME: Goes to home screen
         VOLUME_UP: Increase volume by one unit
@@ -49,8 +49,8 @@ class ButtonCode(Enum):
         CHANNEL_DOWN: Go to previous TV channel
         PLAY: Play content
         STOP: Stop content
-        FLASH_PLUS: Unknown
-        FLASH_MINUS: Unknown
+        FLASH_PLUS: Fast forward
+        FLASH_MINUS: Rewind
         PREV: Go to previous track
         NEXT: Go to next track
 
@@ -119,7 +119,7 @@ class Remote(object):
     def send_button(self, button):
         '''
         Sends a remote control button press to the target device. Button codes can come from the predefined ButtonCode
-        enum, or `System.get_remote_control_info()` can return a device-specific list.
+        enum, or :func:`System.get_remote_control_info()` can return a device-specific list.
 
         Args:
             button (ButtonCode or str): The button code to send.
