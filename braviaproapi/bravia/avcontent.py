@@ -81,9 +81,10 @@ class AvContent(object):
         Returns a count of the number of available contents for a given source.
 
         Args:
-            - source (str): The URI of the source to enumerate. See\
-                            https://pro-bravia.sony.net/develop/integrate/rest-api/spec/resource-uri-list/index.html\
-                            for more information.
+            - source (str): The URI of the source to enumerate. See the `Sony documentation`__ for more information.
+
+        .. _SonyDoc: https://pro-bravia.sony.net/develop/integrate/rest-api/spec/resource-uri-list/
+        __ SonyDoc_
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
@@ -91,7 +92,7 @@ class AvContent(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            An integer representing the count of available content.
+            int: The count of available content.
         '''
 
         self.bravia_client.initialize()
@@ -126,9 +127,10 @@ class AvContent(object):
         Returns a list of available content for a given source.
 
         Args:
-            - source (str): The URI of the source to enumerate. See\
-                            https://pro-bravia.sony.net/develop/integrate/rest-api/spec/resource-uri-list/index.html\
-                            for more information.
+            - source (str): The URI of the source to enumerate. See the `Sony documentation`__ for more information.
+
+        .. _SonyDoc: https://pro-bravia.sony.net/develop/integrate/rest-api/spec/resource-uri-list/
+        __ SonyDoc_
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
@@ -136,10 +138,11 @@ class AvContent(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A list of objects containing the following keys. If no content is available, returns None.
-            - `index`: The position of the content in the list.
-            - `name`: The title of the content.
-            - `uri`: The URI at which the content can be accessed.
+            list(dict) or None: A list of dicts containing the following keys. If no content is available, returns\
+                               `None`.
+            * index (`str`): The position of the content in the list.
+            * name (`str or None`): The title of the content, if applicable.
+            * uri (`str or None`): The URI at which the content can be accessed, if applicable.
         '''
         self.bravia_client.initialize()
 
@@ -193,7 +196,7 @@ class AvContent(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A list of string names of available schemes.
+            list(str): A list of string names of available schemes.
         '''
         self.bravia_client.initialize()
 
@@ -223,7 +226,7 @@ class AvContent(object):
         Returns a list of available source types for a given content scheme.
 
         Args:
-            scheme (str): The scheme for which to get sources (retrieve this from `get_scheme_list`).
+            scheme (str): The scheme for which to get sources (retrieve this from :func:`get_scheme_list()`).
 
         Raises:
             TypeError: One or more arguments is the incorrect type.
@@ -231,7 +234,8 @@ class AvContent(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            A list of string source URIs for the specified scheme.
+            list(str) or None: A list of string source URIs for the specified scheme. If scheme is not supported,\
+                               returns `None`.
         '''
 
         self.bravia_client.initialize()
@@ -250,7 +254,7 @@ class AvContent(object):
                 version="1.0"
             )
         except HttpError as err:
-            # Illegal argument likely implies a source type that does not exist, so return None
+            # Illegal argument likely implies a scheme type that does not exist, so return None
             if err.error_code == ErrorCode.ILLEGAL_ARGUMENT.value:
                 return None
             else:
@@ -276,14 +280,15 @@ class AvContent(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            list(object): A list of objects with the following keys:
+            list(dict): A list of dicts with the following keys:
 
-            * `uri`: str or None; The URI at which the input can be accessed, if applicable.
-            * `name`: str or None; The default title of the input, if applicable.
-            * `connected`: bool; Whether the input is currently connected.
-            * `custom_label`: str or None; The user-entered title of the input, if set.
-            * `icon`: :class:`InputIcon`; The icon for the input. If no appropriate icon is available, this is InputIcon.UNKNOWN.
-            * `has_signal`: bool: Whether the input is currently sending a signal to the target device.
+            * uri (`str or None`): The URI at which the input can be accessed, if applicable.
+            * name (`str or None`): The system title of the input, if applicable.
+            * connected (`bool`): True if the input is currently connected, False otherwise.
+            * custom_label (`str or None`): The user-entered title of the input, if set.
+            * icon (:class:`InputIcon`): The icon for the input. If no appropriate icon is available, this is\
+                                         `InputIcon.UNKNOWN`.
+            * has_signal (`bool`): True if input is currently sending a signal to the target device, False otherwise.
         '''
 
         self.bravia_client.initialize()
@@ -354,9 +359,9 @@ class AvContent(object):
         Returns:
             dict or None: A dict containing the following keys. If no content is playing, returns `None`.
 
-            * `uri`: str or None; The URI at which the content can be accessed, if applicable.
-            * `source`: str or None; The source that the content resides within, if applicable.
-            * `name`: str or None; The title of the playing content, if applicable.
+            * uri (`str or None`): The URI at which the content can be accessed, if applicable.
+            * source (`str or None`): The source that the content resides within, if applicable.
+            * name (`str or None`): The title of the playing content, if applicable.
         '''
 
         self.bravia_client.initialize()

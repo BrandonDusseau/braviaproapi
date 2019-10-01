@@ -253,8 +253,8 @@ class System(object):
             ApiError: The request to the target device failed.
 
         Returns:
-            list(object) or None: A list of objects containing the following keys. If an interface is specified and
-            not found, returns `None`.
+            list(dict) or None: A list of dicts containing the following keys. If an interface is specified and\
+                                not found, returns `None`.
 
             * name (`str or None`): The name of the interface.
             * mac (`str or None`): The MAC address of the interface.
