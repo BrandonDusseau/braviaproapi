@@ -1,6 +1,6 @@
 from enum import Enum
 from .errors import HttpError, ApiError, InternalError, AppLaunchError, NoFocusedTextFieldError, \
-    ErrorCode, get_error_message
+    ErrorCode, get_error_message, EncryptionError
 from .util import coalesce_none_or_empty
 
 
@@ -138,6 +138,7 @@ class AppControl(object):
         Raises:
             InternalError: The target device was unable to encrypt the text.
             ApiError: The request to the target device failed.
+            EncryptionError: The target device could not provide a valid encryption key.
 
         Returns:
             str or None: The text, or `None` if no text field is currently focused.
@@ -148,7 +149,7 @@ class AppControl(object):
         encrypted_key = self.bravia_client.encryption.get_rsa_encrypted_common_key()
 
         if encrypted_key is None:
-            raise ApiError(
+            raise EncryptionError(
                 "This device does not support the appropriate encryption needed to access text fields."
             )
 
@@ -250,6 +251,7 @@ class AppControl(object):
         Raises:
             TypeError: The text parameter is not a string.
             ApiError: The request to the device failed.
+            EncryptionError: The target device could not provide a valid encryption key.
             NoFocusedTextFieldError: There is no text field to input text to on the target device.
             InternalError: The target device failed to decrypt the text.
         '''
@@ -262,7 +264,7 @@ class AppControl(object):
         encrypted_key = self.bravia_client.encryption.get_rsa_encrypted_common_key()
 
         if encrypted_key is None:
-            raise ApiError(
+            raise EncryptionError(
                 "This device does not support the appropriate encryption needed to access text fields."
             )
 
@@ -281,7 +283,7 @@ class AppControl(object):
                     "The target device does not currently have a writable text field focused."
                 )
             elif err.error_code == ErrorCode.ENCRYPTION_FAILED.value:
-                raise InternalError("Internal error: The target device rejected our encryption key")
+                raise InternalError("Internal error: The target device rejected our encryption key. This is a bug.")
             else:
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
 

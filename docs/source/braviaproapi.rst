@@ -5,4 +5,3 @@ braviaproapi package
 
     braviaproapi.braviaclient
     braviaproapi.bravia
-    braviaproapi.bravia.errors

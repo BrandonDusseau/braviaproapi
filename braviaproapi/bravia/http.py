@@ -9,7 +9,7 @@ class Http(object):
 
     Args:
         host (str): The HTTP hostname at which the server is running.
-        psk (str); The pre-shared key configured on the server.
+        psk (str): The pre-shared key configured on the server.
     '''
     request_id = 0
 
@@ -28,7 +28,7 @@ class Http(object):
             version (str): Default "1.0"; The version of the API endpoint to request.
 
         Raises:
-            HttpError: The HTTP call failed. Refer to the `error_code` property for details.
+            HttpError: The HTTP call failed. Refer to the `error_code` attribute for details.
 
         Returns:
             list or None: The Sony API returns a list of results. If only one result is returned
@@ -101,7 +101,7 @@ class Http(object):
             remote_code (str): The IRCC code to send.
 
         Raises:
-            HttpError: The HTTP call failed. Refer to the `error_code` property for details.
+            HttpError: The HTTP call failed. Does not populate the `http_error` attribute.
         '''
 
         url = "http://{0}/sony/ircc".format(self.host)

@@ -5,6 +5,13 @@ class ApiError(Exception):
     pass
 
 
+class EncryptionError(ApiError):
+    '''
+    An error occurred while encrypting or decrypting a message.
+    '''
+    pass
+
+
 class TargetNotSupportedError(ApiError):
     '''
     The specified target is not supported by the device.
