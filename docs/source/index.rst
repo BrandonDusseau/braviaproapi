@@ -7,4 +7,6 @@ Module Documentation
 ####################
 
 .. toctree::
-   braviaproapi
+    :maxdepth: 2
+    
+    braviaproapi
