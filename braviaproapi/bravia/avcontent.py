@@ -394,7 +394,8 @@ class AvContent(object):
         Activates the specified content on the target device.
 
         Args:
-            uri (str): The URI at which the content can be accessed.
+            uri (str): The URI at which the content can be accessed. Find the URI from the results of the
+                :func:`get_content_list()` function.
 
         Raises:
             TypeError: One or more arguments is the incorrect type.

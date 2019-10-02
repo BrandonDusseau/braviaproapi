@@ -44,8 +44,10 @@ Now that you have the library available, let's set up the client, change the vol
 .. code-block:: python
 
   from braviaproapi import BraviaClient
+
   television = BraviaClient(host="192.168.1.200", passcode="0000")
 
+  # Wake up the TV if it's asleep
   is_powered_on = television.system.get_power_status()
   if not is_powered_on:
       television.system.power_on()
@@ -61,13 +63,14 @@ Now that you have the library available, let's set up the client, change the vol
   television.appcontrol.set_active_app(apps[0].get("uri"))
 
 
-Feel like controlling your TV in a more retro way? You can send raw remote control commands as well. A list of
-remote codes is available at `braviaproapi.bravia.remote <braviaproapi.bravia.remote.html>`_.
+Feel like going retro? You can send raw remote control commands as well. A list of remote codes is available at
+`braviaproapi.bravia.remote <braviaproapi.bravia.remote.html>`_.
 
 .. code-block:: python
 
   from braviaproapi import BraviaClient
   from braviaproapi.bravia import ButtonCode
+
   television = BraviaClient(host="192.168.1.200", passcode="0000")
 
   television.remote.send_button(ButtonCode.POWER)
