@@ -28,7 +28,7 @@ Installing The Library
 This library is published to PyPI and can be easily installed by running the below command (preferably in a
 `virtualenv <https://pipenv.kennethreitz.org/en/latest/>`_). Python <fill this in!> is required to use this library.
 
-.. code-block:: bash
+.. code-block:: console
 
   pip install braviaproapi
 
@@ -75,3 +75,19 @@ Feel like going retro? You can send raw remote control commands as well. A list 
 
   television.remote.send_button(ButtonCode.POWER)
   television.remote.send_button(ButtonCode.HDMI_1)
+
+
+Handling Errors
+###############
+
+Since Sony's API documentation is a little sketchy, you should be prepared to handle errors raised by the library.
+See `braviaproapi.bravia.errors <braviaproapi.bravia.errors.html>`_ for a list of possible errors that may arise
+due to user error, problems with the library, or device-specific issues. The function documentation also
+indicates which errors may be raised by each function.
+
+
+Contributing
+############
+
+See something that could be improved? Pull requests and issues are accepted at the project's
+`GitHub repository <https://www.github.com/BrandonDusseau/braviaproapi>`_.
