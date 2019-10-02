@@ -1,6 +1,7 @@
 # braviaproapi
 
 [![Documentation Status](https://readthedocs.org/projects/braviaproapi/badge/?version=latest)](https://braviaproapi.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/BrandonDusseau/braviaproapi.svg?branch=master)](https://travis-ci.org/BrandonDusseau/braviaproapi)
 
 This library provides an easy-to-use Python interface for controlling Sony Bravia televisions. It implements the
 BRAVIA Professional Display API, which is present on recent consumer hardware. For more information, take a look at
