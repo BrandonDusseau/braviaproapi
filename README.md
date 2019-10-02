@@ -1,34 +1,28 @@
 # braviaproapi
 
-**WARNING:** This library is in active development and is not ready for use. It is not yet available
-on PyPI and its name and functionality are likely to change without notice.
+This library provides an easy-to-use Python interface for controlling Sony Bravia televisions. It implements the
+BRAVIA Professional Display API, which is present on recent consumer hardware. For more information, take a look at
+`Sony's API documentation <https://pro-bravia.sony.net/develop/integrate/ip-control/>`_.
 
-Library for communicating with Sony Bravia TVs utilizing its Bravia Professional API.
+It supports the following features:
+
+    * Control and launch applications, including text entry into form fields.
+    * Configuration of display and audio options
+    * Control over and information for various system functions (sleep/wake, LED configuration, networking, etc.)
+    * Direct control of external inputs and media sources
+    * Emulated remote control input via IRCC commands
+
+This library is intended for use on newer, Android-based televisions, and has been tested on 2015 and 2016 Bravia
+models running Android 7.0 (Nougat).
 
 ## Requirements
 
 This library requires Python 3.7 (tentative) or higher. You can install it with `pip install braviaproapi`.
 
 
-## Enabling the API on the TV
+## Documentation / Getting Started
 
-These instructions are based on a 2015 Bravia TV running Android 7.0 (Nougat). The steps may differ on
-newer devices.
-
-**NOTE:** You should NEVER expose your television's API to the Internet directly as this poses a
-significant security risk to your network and television. If you insist on controlling your TV
-from outside your home network you should set up separate, more secure, software that only exposes
-the functionality you need.
-
-1. Open **Settings**
-2. Select **Network > Home network > IP control**
-3. Set **Authentication** to **Normal and Pre-Shared Key**
-4. Select **Pre-Shared Key** and specify the passcode to initiate your API.
-
-
-## Using the library
-
-TO DO
+You can view the documentation for this project at [Read The Docs](https://braviaproapi.readthedocs.io/).
 
 
 ## Generating Documentation Locally
@@ -43,6 +37,11 @@ Once Sphinx is installed, follow these instructions to generate documentation:
 ```bash
 make html
 ```
+
+
+## Contributing
+
+See an issue? Have something to add? Issues and pull requests are accepted in this repository.
 
 
 ## License
