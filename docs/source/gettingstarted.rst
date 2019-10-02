@@ -22,7 +22,50 @@ To make your television's API accessible to this library:
 That's it! Now you can begin controlling your television.
 
 
+Installing The Library
+######################
+
+This library is published to PyPI and can be easily installed by running the below command (preferably in a
+`virtualenv <https://pipenv.kennethreitz.org/en/latest/>`_). Python <fill this in!> is required to use this library.
+
+.. code-block:: bash
+  pip install braviaproapi
+
 Sending Commands
 ################
 
-TO DO!
+.. tip::
+Full documentation of available commands and the BraviaClient is available on the `braviaproapi <braviaproapi.html>`_
+page.
+
+Now that you have the library available, let's set up the client, change the volume, change inputs, and open an app.
+
+.. code-block:: python
+  from braviaproapi import BraviaClient
+  television = BraviaClient(host="192.168.1.200", passcode="0000")
+
+  is_powered_on = television.system.get_power_status()
+  if not is_powered_on:
+      television.system.power_on()
+
+  # Change input to HDMI 2
+  television.avcontent.set_play_content("extInput:hdmi?port=2")
+
+  # Set the volume to 20%
+  television.audio.set_volume_level(20)
+
+  # Play roulette? Open the first app the TV returns.
+  apps = television.appcontrol.get_application_list(exclude_builtin=True)
+  television.appcontrol.set_active_app(apps[0].get("uri"))
+
+
+Feel like controlling your TV in a more retro way? You can send raw remote control commands as well. A list of
+remote codes is available at `braviaproapi.bravia.remote <braviaproapi.bravia.remote.html>`_.
+
+.. code-block:: python
+  from braviaproapi import BraviaClient
+  from braviaproapi.bravia import ButtonCode
+  television = BraviaClient(host="192.168.1.200", passcode="0000")
+
+  television.remote.send_button(ButtonCode.POWER)
+  television.remote.send_button(ButtonCode.HDMI_1)
