@@ -17,7 +17,7 @@ models running Android 7.0 (Nougat).
 
 ## Requirements
 
-This library requires Python 3.7 (tentative) or higher. You can install it with `pip install braviaproapi`.
+This library supports Python 3.7 and higher. You can install it with `pip install braviaproapi`.
 
 
 ## Documentation / Getting Started

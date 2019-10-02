@@ -26,7 +26,7 @@ Installing The Library
 ######################
 
 This library is published to PyPI and can be easily installed by running the below command (preferably in a
-`virtualenv <https://pipenv.kennethreitz.org/en/latest/>`_). Python <fill this in!> is required to use this library.
+`virtualenv <https://pipenv.kennethreitz.org/en/latest/>`_). Python 3.7 or higher is required to use this library.
 
 .. code-block:: console
 
