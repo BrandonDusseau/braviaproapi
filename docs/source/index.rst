@@ -18,6 +18,14 @@ models running Android 7.0 (Nougat).
 
 Take a look at the `Getting Started <gettingstarted.html>`_ page to learn how to use the library.
 
+
+Contributing
+############
+
+See something that could be improved? Pull requests and issues are accepted at the project's
+`GitHub repository <https://www.github.com/BrandonDusseau/braviaproapi>`_.
+
+
 Table of Contents
 #################
 

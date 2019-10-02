@@ -84,10 +84,3 @@ Since Sony's API documentation is a little sketchy, you should be prepared to ha
 See `braviaproapi.bravia.errors <braviaproapi.bravia.errors.html>`_ for a list of possible errors that may arise
 due to user error, problems with the library, or device-specific issues. The function documentation also
 indicates which errors may be raised by each function.
-
-
-Contributing
-############
-
-See something that could be improved? Pull requests and issues are accepted at the project's
-`GitHub repository <https://www.github.com/BrandonDusseau/braviaproapi>`_.
