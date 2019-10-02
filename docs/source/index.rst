@@ -1,7 +1,22 @@
 braviaproapi - Sony Bravia API Client
 =====================================
 
-Some words will go here soon.
+This library provides an easy-to-use Python interface for controlling Sony Bravia televisions. It implements the
+BRAVIA Professional Display API, which is present on recent consumer hardware. For more information, take a look at
+`Sony's API documentation <https://pro-bravia.sony.net/develop/integrate/ip-control/>`_.
+
+It supports the following features:
+
+    * Control and launch applications, including text entry into form fields.
+    * Configuration of display and audio options
+    * Control over and information for various system functions (sleep/wake, LED configuration, networking, etc.)
+    * Direct control of external inputs and media sources
+    * Emulated remote control input via IRCC commands
+
+This library is intended for use on newer, Android-based televisions, and has been tested on 2015 and 2016 Bravia
+models running Android 7.0 (Nougat).
+
+Take a look at the `Getting Started <gettingstarted>`_ page to learn how to use the library.
 
 Table of Contents
 #################
