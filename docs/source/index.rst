@@ -16,7 +16,7 @@ It supports the following features:
 This library is intended for use on newer, Android-based televisions, and has been tested on 2015 and 2016 Bravia
 models running Android 7.0 (Nougat).
 
-Take a look at the `Getting Started <gettingstarted>`_ page to learn how to use the library.
+Take a look at the `Getting Started <gettingstarted.html>`_ page to learn how to use the library.
 
 Table of Contents
 #################
