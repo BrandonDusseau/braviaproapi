@@ -1,5 +1,4 @@
-requests
-packaging
-pycryptodome
-python-dateutil
-pprint
+requests>=2,<3
+python-dateutil>=2,<3
+packaging>=19
+pycryptodome>=3,<4
