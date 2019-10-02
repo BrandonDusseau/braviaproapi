@@ -2,7 +2,7 @@
 
 This library provides an easy-to-use Python interface for controlling Sony Bravia televisions. It implements the
 BRAVIA Professional Display API, which is present on recent consumer hardware. For more information, take a look at
-`Sony's API documentation <https://pro-bravia.sony.net/develop/integrate/ip-control/>`_.
+[Sony's API documentation](https://pro-bravia.sony.net/develop/integrate/ip-control/).
 
 It supports the following features:
 
