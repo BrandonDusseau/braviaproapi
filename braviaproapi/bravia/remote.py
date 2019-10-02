@@ -31,7 +31,7 @@ class ButtonCode(Enum):
         GREEN: Green favorite key
         YELLOW: Yellow favorite key
         BLUE: Blue favorite key
-        UP: Up direcitonal key
+        UP: Up directional key
         DOWN: Down directional key
         RIGHT: Right directional key
         LEFT: Left directional key

@@ -28,13 +28,12 @@ You can view the documentation for this project at [Read The Docs](https://bravi
 ## Generating Documentation Locally
 
 Generating the documentation for this project requires
-[Sphinx](http://www.sphinx-doc.org/en/master/usage/installation.html).
+[Sphinx](http://www.sphinx-doc.org/en/master/usage/installation.html). Installing from pip is recommended.
 
-Once Sphinx is installed, follow these instructions to generate documentation:
-
-1. From the `docs` directory, run:
+Once Sphinx is installed, run these commands to generate documentation (requires GNU make):
 
 ```bash
+cd docs
 make html
 ```
 
