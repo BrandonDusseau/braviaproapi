@@ -21,11 +21,11 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
+    setup_requires=["setuptools_scm"],
     install_requires=[
         "requests>=2,<3",
         "python-dateutil>=2,<3",
-        "pycryptodome>=3,<4",
-        "setuptools_scm"
+        "pycryptodome>=3,<4"
     ],
     keywords='sony bravia television remote control library'
 )
