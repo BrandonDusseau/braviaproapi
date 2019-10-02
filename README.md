@@ -1,5 +1,7 @@
 # braviaproapi
 
+[![Documentation Status](https://readthedocs.org/projects/braviaproapi/badge/?version=latest)](https://braviaproapi.readthedocs.io/en/latest/?badge=latest)
+
 This library provides an easy-to-use Python interface for controlling Sony Bravia televisions. It implements the
 BRAVIA Professional Display API, which is present on recent consumer hardware. For more information, take a look at
 [Sony's API documentation](https://pro-bravia.sony.net/develop/integrate/ip-control/).
@@ -8,7 +10,7 @@ It supports the following features:
 
   * Control and launch applications, including text entry into form fields.
   * Configuration of display and audio options
-  * Control over and information for various system functions (sleep/wake, LED configuration, networking, etc.)
+  * Control over various system functions (sleep/wake, LED configuration, power saving, etc.)
   * Direct control of external inputs and media sources
   * Emulated remote control input via IRCC commands
 
