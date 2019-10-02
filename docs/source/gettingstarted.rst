@@ -29,18 +29,20 @@ This library is published to PyPI and can be easily installed by running the bel
 `virtualenv <https://pipenv.kennethreitz.org/en/latest/>`_). Python <fill this in!> is required to use this library.
 
 .. code-block:: bash
+
   pip install braviaproapi
 
 Sending Commands
 ################
 
 .. tip::
-Full documentation of available commands and the BraviaClient is available on the `braviaproapi <braviaproapi.html>`_
-page.
+  Full documentation of available commands and the BraviaClient is available on the `braviaproapi <braviaproapi.html>`_
+  page.
 
 Now that you have the library available, let's set up the client, change the volume, change inputs, and open an app.
 
 .. code-block:: python
+
   from braviaproapi import BraviaClient
   television = BraviaClient(host="192.168.1.200", passcode="0000")
 
@@ -63,6 +65,7 @@ Feel like controlling your TV in a more retro way? You can send raw remote contr
 remote codes is available at `braviaproapi.bravia.remote <braviaproapi.bravia.remote.html>`_.
 
 .. code-block:: python
+
   from braviaproapi import BraviaClient
   from braviaproapi.bravia import ButtonCode
   television = BraviaClient(host="192.168.1.200", passcode="0000")
