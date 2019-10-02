@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="braviaproapi",
-    version="0.1.0",
+    use_scm_version=True,
     author="Brandon Dusseau",
     author_email="brandon.dusseau+pypi@gmail.com",
     description="Library for controlling Sony Bravia TVs utilizing their Bravia Professional API.",
@@ -24,7 +24,8 @@ setuptools.setup(
     install_requires=[
         "requests>=2,<3",
         "python-dateutil>=2,<3",
-        "pycryptodome>=3,<4"
+        "pycryptodome>=3,<4",
+        "setuptools_scm"
     ],
     keywords='sony bravia television remote control library'
 )

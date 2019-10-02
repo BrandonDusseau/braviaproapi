@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.7"
+deploy:
+  provider: pypi
+  user: BrandonDusseau
+  password:
+    secure: 79fjILaN4JmyLDmyzYzB2lqIKBqpZZAZdX1VuIFq1R0ap7dk3EpglNi3vI6rk3yz68/BLhvEqFp4YAm5mZVdTlOdJbCrIcCzTE2kGScQh2wjDIYHV4ZyWoXSdmJ2+2dzIVXSl3XexqARWwsK7xHLWLzTwMPGuNIGbmIRTjTTiEfr+Ch7eN8eX2N4sPuNAclpF1wQLzfFUex1HtJVF6f0zNLgXzAxwPmGeAtWx+3qHb9pkPuitkhGOBjK7RB4gs8tRLLZuDJQuRenfrExq7B0y5QJ0Hkz43gTZ7gAGKpDYwsIvPst4rs6gtIRxqKUloz4hAic8PtsWg8KlKr5t9j6Ia8Z6/4FjV9JI1cXa/Db2gTvIaCFPbS/zv5dCiyz7S/7I0Fwd17VUTKm1JUkp/+cDt93rLzazURwYbngsPI0vxbeouWK9+kaKndO6XW23To6Hda2VF7/xECptrmMW/JgAED7y91cqrDQU4DtLvEW+qQ8TYV32uSxy4PNhNDJbh8ohp52P1Cm9BllvCI8TjEsSBBaycZjc2GXoAX+DxT0Bd6NImIb1XwN0enSWG0m5IsQn7iMp6aUESEScBVm4QBu6bPt/ET1VpLtIy4nNb4oMJSEFYdMXbk7GMzqRbxNfefjRUepkJAdyyhXT7viOjd9M+QyON88x1TjJjc22XMTD70=
+  on:
+    tags: true

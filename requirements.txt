@@ -1,4 +1,4 @@
 requests>=2,<3
 python-dateutil>=2,<3
-packaging>=19
+packaging
 pycryptodome>=3,<4
