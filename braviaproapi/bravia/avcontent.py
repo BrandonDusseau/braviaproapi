@@ -412,7 +412,7 @@ class AvContent(object):
             raise ValueError("uri must be non-empty string")
 
         try:
-            response = self.http_client.request(
+            self.http_client.request(
                 endpoint="avContent",
                 method="setPlayContent",
                 params={"uri": uri},
@@ -420,6 +420,3 @@ class AvContent(object):
             )
         except HttpError as err:
             raise ApiError(get_error_message(err.error_code, str(err))) from None
-
-        if not response or type(response) is not dict:
-            raise ApiError("API returned unexpected response format for getPlayingContentInfo")
