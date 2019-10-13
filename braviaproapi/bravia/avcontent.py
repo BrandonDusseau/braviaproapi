@@ -375,7 +375,7 @@ class AvContent(object):
             )
         except HttpError as err:
             # The device can't return information for some types of content, or when the display is off.
-            if err.error_code == ErrorCode.DISPLAY_OFF.value or err.error_core == ErrorCode.ILLEGAL_STATE.value:
+            if err.error_code == ErrorCode.DISPLAY_OFF.value or err.error_code == ErrorCode.ILLEGAL_STATE.value:
                 return None
             else:
                 raise ApiError(get_error_message(err.error_code, str(err))) from None
