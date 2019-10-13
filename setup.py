@@ -25,7 +25,8 @@ setuptools.setup(
     install_requires=[
         "requests>=2,<3",
         "python-dateutil>=2,<3",
-        "pycryptodome>=3,<4"
+        "pycryptodome>=3,<4",
+        "packaging"
     ],
     keywords='sony bravia television remote control library'
 )
