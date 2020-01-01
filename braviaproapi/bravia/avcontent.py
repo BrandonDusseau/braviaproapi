@@ -141,6 +141,14 @@ class AvContent(object):
             list(dict) or None: A list of dicts containing the following keys. If no content is available, returns\
                                `None`.
 
+            * channel_info (`dict` or None): If the content is a television channel, this provides the following
+              information. If the content is not a television channel, this is `None`.
+
+              * channel_full (`str`): The full channel number (e.g. 7.2)
+              * channel_main (`str`): The primary channel number (e.g. 7)
+              * channel_sub (`str` or None): The subchannel number, if available (e.g. 2)
+              * visible (`bool`): Whether the channel is enabled ("visible") on the television.
+
             * index (`str`): The position of the content in the list.
             * name (`str or None`): The title of the content, if applicable.
             * uri (`str or None`): The URI at which the content can be accessed, if applicable.
@@ -179,11 +187,27 @@ class AvContent(object):
                 raise ApiError("API returned unexpected response format for getContentList")
 
             for index in response:
-                content.append({
+                this_source = {
                     "index": index.get("index"),
                     "name": coalesce_none_or_empty(index.get("title")),
-                    "uri": coalesce_none_or_empty(index.get("uri"))
-                })
+                    "uri": coalesce_none_or_empty(index.get("uri")),
+                    "channel_info": None
+                }
+
+                media_type = index.get("programMediaType")
+                if media_type is not None and media_type == "tv":
+                    channel_id = index.get("dispNum")
+                    visibility = index.get("visibility")
+                    if channel_id is not None:
+                        split_num = channel_id.split(".")
+                        this_source["channel_info"] = {
+                            "channel_full": channel_id,
+                            "channel_main": split_num[0],
+                            "channel_sub": split_num[1] if len(split_num) > 1 else None,
+                            "visible": visibility is not None and visibility == "visible"
+                        }
+
+                content.append(this_source)
 
             start += 50
 
