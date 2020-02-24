@@ -1,3 +1,4 @@
+import html
 from enum import Enum
 from .errors import HttpError, ApiError, InternalError, AppLaunchError, NoFocusedTextFieldError, \
     ErrorCode, get_error_message, EncryptionError
@@ -70,7 +71,7 @@ class AppControl(object):
 
         for app_info in response:
             app = {
-                "name": coalesce_none_or_empty(app_info.get("title")),
+                "name": html.unescape(coalesce_none_or_empty(app_info.get("title"))),
                 "uri": coalesce_none_or_empty(app_info.get("uri")),
                 "icon": coalesce_none_or_empty(app_info.get("icon"))
             }
