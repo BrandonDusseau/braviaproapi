@@ -15,8 +15,15 @@ It supports the following features:
   * Direct control of external inputs and media sources
   * Emulated remote control input via IRCC commands
 
-This library is intended for use on newer, Android-based televisions, and has been tested on 2015 and 2016 Bravia
-models running Android 7.0 (Nougat).
+## Compatibility
+
+This library is intended for use on newer, Android-based televisions. A list of devices and software versions known to be compatible is available on [the GitHub wiki](https://github.com/BrandonDusseau/braviaproapi/wiki/Compatible-Device-List).
+
+It has come to my attention that some newer Bravia models have received software updates bumping their API version to higher than 3.x. These devices are not supported by braviaproapi at this time as I do not have a compatible device to test with. Contributions to the library (and the above linked wiki page) are encouraged if you have a supported device!
+
+If your device is not compatible, braviaproapi will raise the following exception on first connection:
+
+    braviaproapi.bravia.errors.apierror.ApiError: The target device is running an incompatible API version 'X.Y.Z'
 
 ## Requirements
 

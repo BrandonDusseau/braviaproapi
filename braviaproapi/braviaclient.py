@@ -55,12 +55,14 @@ class BraviaClient(object):
         if api_version is None:
             raise ApiError(
                 "Unable to verify API version compatibility because the device did not indicate its API version."
-            )
+            ) from None
 
         if (
             version.parse(api_version) >= version.parse("4.0.0")
             or version.parse(api_version) < version.parse("3.0.0")
         ):
-            raise ApiError("The target device is running an incompatible API version '{0}'".format(api_version))
+            raise ApiError(
+                "The target device is running an incompatible API version '{0}'".format(api_version)
+            ) from None
 
         self.__initialized = True
