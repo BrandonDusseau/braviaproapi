@@ -11,7 +11,7 @@ setuptools.setup(
     description="Library for controlling Sony Bravia TVs utilizing their Bravia Professional API.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/BrandonDusseau/py-bravia-pro-api",
+    url="https://github.com/BrandonDusseau/braviaproapi",
     packages=setuptools.find_packages(exclude=["http"]),
     classifiers=[
         "Programming Language :: Python :: 3.7",
