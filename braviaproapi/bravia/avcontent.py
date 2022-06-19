@@ -167,6 +167,9 @@ class AvContent(object):
 
         content = []
 
+        # Version 5.0 of the API introduces version 1.5 of this endpoint. It appears to have the same schema, however.
+        is_api_v5 = version.parse(self.bravia_client.api_verison) >= version.parse("5.0.0")
+
         start = 0
         while (start < count):
             try:
@@ -174,11 +177,14 @@ class AvContent(object):
                     endpoint="avContent",
                     method="getContentList",
                     params={"source": source, "stIdx": start, "cnt": 50},
-                    version="1.2"
+                    version="1.5" if is_api_v5 else "1.2"
                 )
             except HttpError as err:
                 # Illegal argument likely implies a source type that does not exist, so return None
                 if err.error_code == ErrorCode.ILLEGAL_ARGUMENT.value:
+                    return None
+                # If the storage medium does not exist, return None.
+                elif err.error_code == ErrorCode.STORAGE_DOES_NOT_EXIST.value:
                     return None
                 else:
                     raise ApiError(get_error_message(err.error_code, str(err))) from None

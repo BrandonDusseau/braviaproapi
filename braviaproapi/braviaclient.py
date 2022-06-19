@@ -32,6 +32,7 @@ class BraviaClient(object):
         self.audio = Audio(bravia_client=self, http_client=self.http_client)
         self.remote = Remote(bravia_client=self, http_client=self.http_client)
         self.avcontent = AvContent(bravia_client=self, http_client=self.http_client)
+        self.api_version = "0.0.0"
 
     def initialize(self):
         '''
@@ -56,9 +57,10 @@ class BraviaClient(object):
             raise ApiError(
                 "Unable to verify API version compatibility because the device did not indicate its API version."
             ) from None
+        self.api_verison = api_version
 
         if (
-            version.parse(api_version) >= version.parse("4.0.0")
+            version.parse(api_version) >= version.parse("6.0.0")
             or version.parse(api_version) < version.parse("3.0.0")
         ):
             raise ApiError(
