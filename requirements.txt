@@ -1,4 +1,4 @@
-requests>=2,<3
-python-dateutil>=2,<3
+requests>=2.33,<3
+python-dateutil>=2.9,<3
 packaging
-pycryptodome>=3,<4
+pycryptodome>=3.23,<4

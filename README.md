@@ -27,7 +27,7 @@ If your device is not compatible, braviaproapi will raise the following exceptio
 
 ## Requirements
 
-This library supports Python 3.7 and higher. You can install it with `pip install braviaproapi`.
+This library supports Python 3.10 and higher. You can install it with `pip install braviaproapi`.
 
 
 ## Documentation / Getting Started

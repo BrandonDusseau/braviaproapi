@@ -14,18 +14,18 @@ setuptools.setup(
     url="https://github.com/BrandonDusseau/braviaproapi",
     packages=setuptools.find_packages(exclude=["http"]),
     classifiers=[
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent ",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
     setup_requires=["setuptools_scm"],
     install_requires=[
-        "requests>=2,<3",
-        "python-dateutil>=2,<3",
-        "pycryptodome>=3,<4",
+        "requests>=2.33,<3",
+        "python-dateutil>=2.9,<3",
+        "pycryptodome>=3.23,<4",
         "packaging"
     ],
     keywords='sony bravia television remote control library'
